@@ -27,6 +27,7 @@
     "simplebar": "^6.3.3",
     "split.js": "^1.6.5",
     "tingle.js": "^0.16.0",
-    "treeselectjs": "^0.14.2"
+    "treeselectjs": "^0.14.2",
+    "vanjs-core": "^1.6.0"
   }
 }
