@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/cs16.min.css" />
+    <link rel="stylesheet" href="/src/server-browser.css" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <title>cs16 Server Browser</title>
+  </head>
+  <body class="server-browser">
+    <!-- Header with Title and Close -->
+    <header class="browser-header">
+      <div class="header-top">
+        <h1 class="browser-title">⚙ Servers</h1>
+        <button class="cs-btn close" onclick="window.location='/'"></button>
+      </div>
+    </header>
+
+    <!-- Tab Navigation -->
+    <nav class="browser-tabs">
+      <button class="tab-btn active" data-tab="internet">Internet</button>
+      <button class="tab-btn" data-tab="favorites">Favorites</button>
+      <button class="tab-btn" data-tab="history">History</button>
+      <button class="tab-btn" data-tab="spectate">Spectate</button>
+      <button class="tab-btn" data-tab="lan">Lan</button>
+      <button class="tab-btn" data-tab="friends">Friends</button>
+    </nav>
+
+    <!-- Server List Container -->
+    <div class="browser-content">
+      <!-- Server Count and Column Headers -->
+      <div class="server-header">
+        <div class="server-count">
+          <input type="checkbox" class="sort-icon" />
+          <span class="count-label">Servers (1362)</span>
+        </div>
+        <div class="column-headers">
+          <div class="col-game">Game</div>
+          <div class="col-players">Players</div>
+          <div class="col-map">Map</div>
+          <div class="col-latency">Latency</div>
+        </div>
+      </div>
+
+      <!-- Server List -->
+      <div class="server-list" id="server-list">
+        <!-- Servers rendered by VanJS -->
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <footer class="browser-footer">
+      <div class="filter-section">
+        <button class="cs-btn">Change filters</button>
+        <span class="filter-text">Counter-Strike ;</span>
+      </div>
+      <div class="action-buttons">
+        <button class="cs-btn" id="quick-refresh">Quick refresh</button>
+        <button class="cs-btn" id="refresh-all">Refresh all</button>
+        <button class="cs-btn" id="connect-btn">Connect</button>
+      </div>
+    </footer>
+
+    <script type="module" src="./src/server-browser.js"></script>
+  </body>
+</html>
