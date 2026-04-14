@@ -18,7 +18,16 @@
   "dependencies": {
     "autoprefixer": "^10.4.20",
     "cssnano": "^7.0.6",
+    "dompurify": "^3.3.3",
+    "mousetrap": "^1.6.5",
+    "pell": "^1.0.6",
+    "pikaday": "^1.8.2",
     "postcss-cli": "^11.0.0",
-    "postcss-pxtorem": "^6.1.0"
+    "postcss-pxtorem": "^6.1.0",
+    "simplebar": "^6.3.3",
+    "split.js": "^1.6.5",
+    "tingle.js": "^0.16.0",
+    "treeselectjs": "^0.14.2",
+    "vanjs-core": "^1.6.0"
   }
 }

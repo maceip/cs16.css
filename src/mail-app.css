@@ -1,0 +1,786 @@
+/* Mail App Layout - Uses cs16.css color variables */
+
+.mail-app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+  background-color: var(--bg);
+}
+
+/* Header */
+.app-header {
+  background-color: var(--secondary-bg);
+  border-bottom: 1px solid var(--border-light);
+  padding: 8px;
+  flex-shrink: 0;
+}
+
+.app-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 18px;
+  color: var(--accent);
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+/* Main Container - Three Pane Layout */
+.app-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background-color: var(--secondary-bg);
+}
+
+.gutter {
+  background-color: var(--border-light);
+  cursor: col-resize;
+  flex-shrink: 0;
+}
+
+.gutter.gutter-horizontal {
+  cursor: col-resize;
+  width: 4px;
+}
+
+/* Sidebar - Left Pane */
+.sidebar {
+  background-color: var(--secondary-bg);
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 8px;
+  flex-shrink: 0;
+  min-width: 150px;
+}
+
+.sidebar-header {
+  margin-bottom: 12px;
+}
+
+.sidebar-header h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 12px;
+  letter-spacing: 1px;
+  border-bottom: 1px solid var(--border-dark);
+  padding-bottom: 4px;
+}
+
+.folder-nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.folder-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 4px;
+  margin: 2px 0;
+  background-color: var(--bg);
+  border: 1px solid var(--secondary-bg);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.folder-item:hover {
+  background-color: var(--border-dark);
+  color: var(--accent);
+}
+
+.folder-item.active {
+  background-color: var(--accent);
+  color: var(--outline);
+  border: 1px solid var(--accent);
+}
+
+.folder-item-name {
+  flex: 1;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.folder-item-count {
+  background-color: var(--accent);
+  color: var(--outline);
+  padding: 2px 6px;
+  margin-left: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  min-width: 24px;
+  text-align: center;
+}
+
+.folder-item.active .folder-item-count {
+  background-color: var(--outline);
+  color: var(--accent);
+}
+
+.sidebar-footer {
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-dark);
+}
+
+/* Message List Pane - Middle */
+.message-list-pane {
+  flex: 1;
+  background-color: var(--secondary-bg);
+  border-right: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  overflow: hidden;
+  min-width: 200px;
+}
+
+.list-header {
+  margin-bottom: 8px;
+}
+
+.list-header h3 {
+  margin: 0 0 8px 0;
+  color: var(--text);
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.list-toolbar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.list-toolbar input {
+  flex: 1;
+}
+
+.message-list {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--secondary-bg);
+}
+
+.message-row {
+  display: flex;
+  align-items: center;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--border-dark);
+  cursor: pointer;
+  transition: all 0.1s;
+  background-color: var(--secondary-bg);
+}
+
+.message-row:hover {
+  background-color: var(--border-dark);
+}
+
+.message-row.unread {
+  font-weight: bold;
+  background-color: var(--bg);
+}
+
+.message-row.selected {
+  background-color: var(--accent);
+  color: var(--outline);
+}
+
+.message-row.selected .message-sender,
+.message-row.selected .message-subject,
+.message-row.selected .message-time {
+  color: var(--outline);
+}
+
+.message-row-checkbox {
+  margin-right: 8px;
+}
+
+.message-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.message-sender {
+  font-size: 12px;
+  color: var(--accent);
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.message-subject {
+  font-size: 11px;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.message-time {
+  font-size: 10px;
+  color: var(--text-3);
+  margin-left: 8px;
+  white-space: nowrap;
+}
+
+/* Reading Pane - Right */
+.reading-pane {
+  background-color: var(--secondary-bg);
+  display: flex;
+  flex-direction: column;
+  padding: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  min-width: 200px;
+}
+
+.reading-pane-content {
+  flex: 1;
+  overflow-y: auto;
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  padding: 8px;
+}
+
+.no-selection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.message-metadata {
+  margin-bottom: 12px;
+}
+
+.message-metadata-row {
+  display: flex;
+  margin-bottom: 4px;
+  font-size: 11px;
+}
+
+.metadata-label {
+  color: var(--accent);
+  font-weight: bold;
+  min-width: 60px;
+}
+
+.metadata-value {
+  color: var(--text);
+  flex: 1;
+  word-break: break-all;
+}
+
+.message-body {
+  font-size: 12px;
+  color: var(--text);
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.reading-pane-actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--border-dark);
+}
+
+.reading-pane-actions .cs-btn {
+  flex: 1;
+  font-size: 10px;
+}
+
+/* Dialogs */
+.compose-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-group label {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.field-group input {
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  padding: 4px 6px;
+}
+
+.field-group input:focus {
+  outline: none;
+  background-color: var(--secondary-bg);
+  border-color: var(--accent);
+}
+
+#compose-editor {
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  min-height: 200px;
+  padding: 6px;
+  color: var(--text);
+}
+
+/* Pell Editor Styling */
+.pell {
+  border: 1px solid var(--border-light);
+  background-color: var(--bg);
+}
+
+.pell-button {
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  padding: 4px 8px;
+  margin: 2px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: all 0.1s;
+}
+
+.pell-button:hover {
+  background-color: var(--border-dark);
+  color: var(--accent);
+}
+
+.pell-button.active {
+  background-color: var(--accent);
+  color: var(--outline);
+}
+
+.pell-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pell-content {
+  background-color: var(--bg);
+  color: var(--text);
+  padding: 6px;
+  min-height: 150px;
+  outline: none;
+}
+
+.pell-content:focus {
+  outline: none;
+  border: 1px solid var(--accent);
+}
+
+/* TreeSelect Styling */
+.treeselect {
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  color: var(--text);
+}
+
+.treeselect-placeholder {
+  color: var(--text-3);
+}
+
+.treeselect-search {
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--border-dark);
+  padding: 4px;
+}
+
+.treeselect-search input {
+  background-color: var(--secondary-bg);
+  color: var(--text);
+  border: 1px solid var(--border-light);
+  padding: 4px;
+}
+
+.treeselect-options {
+  background-color: var(--bg);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.treeselect-option {
+  padding: 4px 8px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.treeselect-option:hover {
+  background-color: var(--border-dark);
+  color: var(--accent);
+}
+
+.treeselect-option.selected {
+  background-color: var(--accent);
+  color: var(--outline);
+}
+
+.treeselect-option.disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+.treeselect-option-nest {
+  margin-left: 12px;
+}
+
+/* Transmission Progress */
+.transmission-progress {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 8px;
+  background-color: var(--secondary-bg);
+  border-top: 1px solid var(--border-light);
+  z-index: 1000;
+}
+
+/* Scrollbar styling */
+.message-list::-webkit-scrollbar,
+.reading-pane-content::-webkit-scrollbar,
+.sidebar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.message-list::-webkit-scrollbar-track,
+.reading-pane-content::-webkit-scrollbar-track,
+.sidebar::-webkit-scrollbar-track {
+  background-color: var(--secondary-bg);
+}
+
+.message-list::-webkit-scrollbar-thumb,
+.reading-pane-content::-webkit-scrollbar-thumb,
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: var(--border-dark);
+  border: 2px solid var(--secondary-bg);
+}
+
+.message-list::-webkit-scrollbar-thumb:hover,
+.reading-pane-content::-webkit-scrollbar-thumb:hover,
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background-color: var(--accent);
+}
+
+/* Tooltips for UI Actions */
+.tooltip-icon {
+  position: relative;
+  cursor: help;
+}
+
+.cs-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: default;
+}
+
+.cs-tooltip .text {
+  visibility: hidden;
+  background-color: var(--bg);
+  color: var(--text);
+  text-align: center;
+  padding: 6px 8px;
+  border: 1px solid var(--border-light);
+  border-radius: 0;
+  position: absolute;
+  z-index: 1;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.cs-tooltip:hover .text {
+  visibility: visible;
+}
+
+/* Progress bar animations */
+.cs-progress-bar {
+  width: 100%;
+  height: 16px;
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  overflow: hidden;
+}
+
+.cs-progress-bar .bars {
+  height: 100%;
+  background-color: var(--accent);
+  transition: width 0.2s ease;
+  position: relative;
+}
+
+.cs-progress-bar .bars::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Dialog improvements */
+.cs-dialog .heading {
+  background-color: var(--secondary-bg);
+  border-bottom: 1px solid var(--border-light);
+  padding: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cs-dialog .content {
+  padding: 16px;
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.cs-dialog .footer-btns {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  border-top: 1px solid var(--border-light);
+  background-color: var(--secondary-bg);
+}
+
+.cs-dialog .footer-btns .cs-btn {
+  flex: 1;
+}
+
+/* Tab improvements */
+.cs-tabs {
+  width: 100%;
+}
+
+/* Hide radio button inputs */
+.cs-tabs input.radiotab {
+  display: none;
+}
+
+/* Tab labels - display inline horizontally */
+.cs-tabs label.label {
+  display: inline-block;
+  padding: 8px 12px;
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  border-bottom: 2px solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.1s;
+  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: bold;
+  color: var(--text);
+  margin: 0;
+  user-select: none;
+  width: calc(33.333% - 2px);
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.cs-tabs label.label:hover {
+  background-color: var(--border-dark);
+  color: var(--accent);
+}
+
+/* Active tab label */
+.cs-tabs input.radiotab:checked + label.label {
+  background-color: var(--secondary-bg);
+  border-bottom: 3px solid var(--accent);
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Tab panel - hidden by default, display as block */
+.cs-tabs .panel {
+  display: none;
+  width: 100%;
+  padding: 16px;
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  border-top: none;
+  box-sizing: border-box;
+  clear: both;
+}
+
+/* Show active tab panel - adjacent selector from checked radio */
+.cs-tabs input.radiotab:checked + label.label + .panel {
+  display: block;
+}
+
+/* Fieldset styling */
+.cs-fieldset {
+  border: 1px solid var(--border-light);
+  padding: 12px;
+  background-color: var(--secondary-bg);
+}
+
+.cs-fieldset legend {
+  color: var(--accent);
+  padding: 0 8px;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 11px;
+}
+
+.radio-wrapper {
+  padding: 4px 0;
+  display: flex;
+  align-items: center;
+}
+
+.radio-wrapper input[type="checkbox"],
+.radio-wrapper input[type="radio"] {
+  margin-right: 8px;
+}
+
+.radio-wrapper label {
+  color: var(--text);
+  cursor: pointer;
+  font-size: 12px;
+}
+
+/* Pikaday Date Picker Styling */
+.pika-single {
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 0;
+  font-family: ArialPixel, system-ui, sans-serif;
+}
+
+.pika-title {
+  background-color: var(--secondary-bg);
+  color: var(--text);
+  border-bottom: 1px solid var(--border-light);
+  padding: 6px;
+  font-size: 11px;
+}
+
+.pika-label {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.pika-next,
+.pika-prev {
+  color: var(--accent);
+  cursor: pointer;
+  user-select: none;
+}
+
+.pika-next:hover,
+.pika-prev:hover {
+  color: var(--text);
+}
+
+.pika-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pika-table th {
+  color: var(--text-3);
+  background-color: var(--secondary-bg);
+  padding: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.pika-table td {
+  padding: 2px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.pika-table button {
+  width: 100%;
+  padding: 4px;
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-dark);
+  cursor: pointer;
+  font-family: ArialPixel, system-ui, sans-serif;
+  font-size: 10px;
+  transition: all 0.1s;
+}
+
+.pika-table button:hover {
+  background-color: var(--border-dark);
+  color: var(--accent);
+}
+
+.pika-table button.is-selected {
+  background-color: var(--accent);
+  color: var(--outline);
+  border: 1px solid var(--accent);
+  font-weight: bold;
+}
+
+.pika-table button.is-today {
+  font-weight: bold;
+  border: 1px solid var(--accent);
+}
+
+.pika-table button.is-disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+.pika-table button.is-inrange {
+  background-color: var(--secondary-bg);
+  color: var(--text);
+}
+
+/* Date filter toolbar button */
+.list-toolbar .cs-btn {
+  white-space: nowrap;
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .reading-pane {
+    display: none;
+  }
+
+  .message-list-pane {
+    border-right: none;
+  }
+}
