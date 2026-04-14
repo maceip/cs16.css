@@ -136,10 +136,10 @@ body.mail-app {
 }
 
 .app-container {
-  display: grid;
-  grid-template-columns: minmax(240px, 0.9fr) minmax(320px, 1.25fr) minmax(340px, 1.2fr);
+  display: flex;
   gap: var(--mail-gap);
   align-items: stretch;
+  min-height: clamp(420px, 65vh, 880px);
 }
 
 .pane-shell {
@@ -152,6 +152,7 @@ body.mail-app {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  overflow: hidden;
 }
 
 .pane-heading {
@@ -178,12 +179,34 @@ body.mail-app {
 }
 
 .sidebar {
+  flex: 0 0 280px;
+  max-width: 340px;
   gap: 10px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
 }
 
 .message-list-pane,
 .reading-pane {
+  min-width: 0;
+  flex: 1 1 0;
   min-height: clamp(420px, 65vh, 880px);
+}
+
+.message-list-pane {
+  flex-basis: 42%;
+}
+
+.reading-pane {
+  flex-basis: 38%;
+}
+
+.app-container > .gutter {
+  flex: 0 0 6px;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--border-light) 75%, white), color-mix(in srgb, var(--border-dark) 80%, black));
+  border-left: 1px solid var(--border-dark);
+  border-right: 1px solid var(--border-light);
+  cursor: col-resize;
 }
 
 .message-list,
@@ -678,6 +701,7 @@ body.mail-app {
   }
 
   .app-container {
+    display: grid;
     grid-template-columns: 1fr;
   }
 
@@ -724,6 +748,7 @@ body.mail-app {
   }
 
   .app-container {
+    display: grid;
     grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
   }
 
@@ -742,6 +767,7 @@ body.mail-app {
   }
 
   .app-container {
+    display: grid;
     grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.15fr);
   }
 }
@@ -761,6 +787,7 @@ body.mail-app {
   }
 
   .app-container {
+    display: grid;
     grid-template-columns: minmax(220px, 0.75fr) minmax(320px, 1fr) minmax(320px, 1fr);
   }
 }
