@@ -4,213 +4,198 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/cs16.min.css" />
-    <link rel="stylesheet" href="/src/index.css" />
     <link rel="stylesheet" href="/src/mail-app.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pell@1.0.2/dist/pell.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <title>cs16 Mail Client</title>
+    <title>cs16 Tactical Mail Grid</title>
   </head>
-  <body class="mail-app">
-    <!-- App Shell Header -->
-    <header class="app-header">
-      <div class="app-header-top">
-        <h1 class="app-title">MAILBOX</h1>
-        <div class="header-actions">
-          <button class="cs-btn" id="new-message-btn">New Message</button>
-          <button class="cs-btn" onclick="window.location='/servers'">Server Browser</button>
-        </div>
-      </div>
-      <hr class="cs-hr" />
-    </header>
-
-    <!-- Main Three-Pane Layout -->
-    <div class="app-container">
-      <!-- Left Sidebar - Folder Navigation -->
-      <aside class="sidebar gutter">
-        <div class="sidebar-header">
-          <h3>FOLDERS</h3>
-        </div>
-        <nav class="folder-nav" id="folder-nav">
-          <!-- Folders rendered by VanJS -->
-        </nav>
-        <hr class="cs-hr" />
-        <div class="sidebar-footer">
-          <button class="cs-btn" id="settings-btn">Settings</button>
-        </div>
-      </aside>
-
-      <!-- Middle Pane - Message List -->
-      <section class="message-list-pane gutter">
-        <div class="list-header">
-          <h3 id="current-folder-title">Inbox</h3>
-          <div class="list-toolbar">
-            <input type="text" class="cs-input" id="search-input" placeholder="Search..." />
-          </div>
-        </div>
-        <hr class="cs-hr" />
-        <div class="message-list" id="message-list">
-          <!-- Messages rendered by VanJS -->
-        </div>
-      </section>
-
-      <!-- Right Pane - Reading Pane -->
-      <section class="reading-pane gutter">
-        <div class="reading-pane-content" id="reading-pane">
-          <div class="no-selection">
-            <p>Select a message to read</p>
-          </div>
-        </div>
-      </section>
+  <body class="mail-app" data-mobile-pane="ledger">
+    <div class="cs-scroll-progress" aria-hidden="true">
+      <div class="cs-scroll-progress__bar" id="scroll-progress-bar"></div>
     </div>
 
-    <!-- Compose Dialog -->
-    <dialog class="cs-dialog" id="compose-dialog">
+    <div class="cs-hud-overlay" id="hud-overlay" aria-hidden="true">
+      <div class="cs-hud-overlay__feed" id="hud-feed"></div>
+      <div class="cs-hud-overlay__counter" id="hud-counter"></div>
+    </div>
+
+    <header class="app-header">
+      <div class="app-header-top">
+        <div class="title-cluster">
+          <p class="title-kicker">CSS 1.6 TACTICAL INTERFACE</p>
+          <h1 class="app-title">TACTICAL MAIL GRID</h1>
+          <p class="title-subcopy">
+            Dense, high-contrast message handling with modern interaction surfaces.
+          </p>
+        </div>
+
+        <div class="header-stats-shell" id="header-stats"></div>
+
+        <div class="header-actions">
+          <button class="cs-btn cs-glow cs-magnetic" id="new-message-btn">New Message</button>
+          <button
+            class="cs-btn cs-magnetic"
+            id="quick-actions-trigger"
+            popovertarget="quick-actions-popover"
+          >
+            Quick Actions
+          </button>
+          <button class="cs-btn cs-magnetic" onclick="window.location='/servers'">
+            Server Browser
+          </button>
+        </div>
+      </div>
+
+      <hr class="cs-hr" />
+
+      <div class="app-header-bottom">
+        <label class="search-cluster" for="search-input">
+          <span class="cs-input__label">Signal Search</span>
+          <input
+            type="search"
+            class="cs-input"
+            id="search-input"
+            placeholder="Search sender, subject, dossier text..."
+          />
+        </label>
+
+        <div class="mobile-switcher-shell" id="mobile-switcher"></div>
+      </div>
+
+      <div class="app-header-banner cs-progressive-blur">
+        <div class="cs-progressive-blur__texture"></div>
+        <div class="cs-progressive-blur__layer" style="--blur: 2px; --mask-stop: 36%;"></div>
+        <div class="cs-progressive-blur__layer" style="--blur: 5px; --mask-stop: 62%;"></div>
+        <div class="cs-progressive-blur__layer" style="--blur: 9px; --mask-stop: 85%;"></div>
+        <div class="app-header-banner__content">
+          <span class="app-banner-chip">Foldable Ready</span>
+          <span class="app-banner-chip">Swipe Inbox</span>
+          <span class="app-banner-chip">Morph Dialogs</span>
+          <span class="app-banner-chip">HUD Alerts</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <div class="app-container" id="app-container">
+        <aside class="sidebar pane-shell" id="sidebar-pane">
+          <div class="pane-heading">
+            <p class="pane-kicker">Tactical Sidebar</p>
+            <h2>Folder Navigation</h2>
+          </div>
+          <hr class="cs-hr" />
+          <nav id="folder-nav" aria-label="Mailbox folders"></nav>
+        </aside>
+
+        <section class="message-list-pane pane-shell" id="ledger-pane">
+          <div class="pane-heading pane-heading--row">
+            <div>
+              <p class="pane-kicker">Inbox Ledger</p>
+              <h2 id="current-folder-title">Inbox</h2>
+            </div>
+            <p class="pane-meta" id="message-count">0 dispatches</p>
+          </div>
+          <hr class="cs-hr" />
+          <div id="message-list" class="message-list" tabindex="0"></div>
+        </section>
+
+        <section class="reading-pane pane-shell" id="reader-pane-shell">
+          <div class="pane-heading">
+            <p class="pane-kicker">Reading Pane</p>
+            <h2>Message Viewer</h2>
+          </div>
+          <hr class="cs-hr" />
+          <div id="reading-pane" class="reading-pane-content" tabindex="0"></div>
+        </section>
+      </div>
+
+      <section class="modern-showcase" id="modern-showcase"></section>
+    </main>
+
+    <div class="command-dock-shell">
+      <div id="command-dock"></div>
+    </div>
+
+    <dialog class="cs-dialog cs-morph-dialog compose-dialog" id="compose-dialog">
       <form method="dialog">
         <div class="heading">
           <div class="wrapper">
             <div class="icon"></div>
-            <p class="text">New Message</p>
+            <p class="text">New Message Command Console</p>
           </div>
-          <button class="cs-btn close"></button>
+          <button class="cs-btn close" type="button" data-close-dialog="compose-dialog"></button>
         </div>
+
         <div class="content">
-          <div class="compose-fields">
+          <div class="compose-grid">
             <div class="field-group">
               <label class="cs-input__label" for="compose-to">To:</label>
               <input type="text" class="cs-input" id="compose-to" />
             </div>
             <div class="field-group">
-              <label class="cs-input__label" for="compose-cc">Cc:</label>
-              <input type="text" class="cs-input" id="compose-cc" />
-            </div>
-            <div class="field-group">
-              <label class="cs-input__label" for="compose-bcc">Bcc:</label>
-              <input type="text" class="cs-input" id="compose-bcc" />
-            </div>
-            <div class="field-group">
               <label class="cs-input__label" for="compose-subject">Subject:</label>
               <input type="text" class="cs-input" id="compose-subject" />
             </div>
-            <div class="field-group">
-              <label class="cs-input__label">Message:</label>
-              <div id="compose-editor"></div>
+            <div class="field-group field-group--full">
+              <div class="field-group__label-row">
+                <label class="cs-input__label" for="compose-body">Body:</label>
+                <button
+                  type="button"
+                  class="cs-btn cs-magnetic"
+                  id="compose-template-trigger"
+                  popovertarget="compose-template-popover"
+                >
+                  Templates
+                </button>
+              </div>
+              <textarea
+                id="compose-body"
+                class="cs-input compose-body"
+                placeholder="Transmit message payload..."
+              ></textarea>
             </div>
           </div>
         </div>
+
         <menu class="footer-btns">
-          <button type="button" class="cs-btn" id="compose-send">Send</button>
-          <button type="button" class="cs-btn" onclick="this.closest('dialog').close()">Discard</button>
+          <button type="button" class="cs-btn cs-glow cs-magnetic" id="compose-send">Send</button>
+          <button type="button" class="cs-btn compose-discard" data-close-dialog="compose-dialog">
+            Discard
+          </button>
         </menu>
       </form>
     </dialog>
 
-    <!-- Move/Label Dialog -->
-    <dialog class="cs-dialog" id="move-dialog">
-      <form method="dialog">
-        <div class="heading">
-          <div class="wrapper">
-            <div class="icon"></div>
-            <p class="text">Move to Folder</p>
-          </div>
-          <button class="cs-btn close"></button>
-        </div>
-        <div class="content">
-          <div id="folder-picker"></div>
-        </div>
-        <menu class="footer-btns">
-          <button type="button" class="cs-btn">Move</button>
-          <button type="button" class="cs-btn" onclick="this.closest('dialog').close()">Cancel</button>
-        </menu>
-      </form>
-    </dialog>
+    <div class="cs-morph-popover quick-actions-popover" id="quick-actions-popover" popover>
+      <p class="popover-title">Field Actions</p>
+      <div class="popover-actions">
+        <button class="cs-btn" type="button" data-quick-action="priority">Focus Priority</button>
+        <button class="cs-btn" type="button" data-quick-action="compose">Compose</button>
+        <button class="cs-btn" type="button" data-quick-action="reader">Open Reader</button>
+      </div>
+    </div>
 
-    <!-- Date Filter Dialog (Pikaday) -->
-    <dialog class="cs-dialog" id="date-filter-dialog">
-      <form method="dialog">
-        <div class="heading">
-          <div class="wrapper">
-            <div class="icon"></div>
-            <p class="text">Filter by Date Range</p>
-          </div>
-          <button class="cs-btn close"></button>
-        </div>
-        <div class="content">
-          <div class="compose-fields">
-            <div class="field-group">
-              <label class="cs-input__label" for="date-filter-start">Start Date:</label>
-              <input type="text" class="cs-input" id="date-filter-start" placeholder="YYYY-MM-DD" />
-            </div>
-            <div class="field-group">
-              <label class="cs-input__label" for="date-filter-end">End Date:</label>
-              <input type="text" class="cs-input" id="date-filter-end" placeholder="YYYY-MM-DD" />
-            </div>
-          </div>
-        </div>
-        <menu class="footer-btns">
-          <button type="button" class="cs-btn" id="apply-date-filter">Apply Filter</button>
-          <button type="button" class="cs-btn" id="clear-date-filter">Clear</button>
-          <button type="button" class="cs-btn" onclick="this.closest('dialog').close()">Close</button>
-        </menu>
-      </form>
-    </dialog>
+    <div class="cs-morph-popover quick-actions-popover" id="compose-template-popover" popover>
+      <p class="popover-title">Insert Template</p>
+      <div class="popover-actions">
+        <button class="cs-btn" type="button" data-template="Status green. Proceeding with deployment window.">
+          Green Status
+        </button>
+        <button class="cs-btn" type="button" data-template="Need approval on the enclosed payload before 1800 hours.">
+          Approval Request
+        </button>
+        <button class="cs-btn" type="button" data-template="Attachment secured. Download link follows in the next relay burst.">
+          Attachment Relay
+        </button>
+      </div>
+    </div>
 
-    <!-- Settings Dialog with Tabs -->
-    <dialog class="cs-dialog" id="settings-dialog">
-      <form method="dialog">
-        <div class="heading">
-          <div class="wrapper">
-            <div class="icon"></div>
-            <p class="text">Settings</p>
-          </div>
-          <button class="cs-btn close"></button>
-        </div>
-        <div class="content">
-          <div class="cs-tabs">
-            <!-- General Tab -->
-            <input class="radiotab" name="settings-tabs" type="radio" id="settings-general" checked="checked" />
-            <label class="label" for="settings-general">General</label>
-            <div class="panel">
-              <fieldset class="cs-fieldset">
-                <legend>Preferences</legend>
-                <div class="radio-wrapper">
-                  <input type="checkbox" id="auto-archive" />
-                  <label for="auto-archive">Auto-archive after reading</label>
-                </div>
-                <div class="radio-wrapper">
-                  <input type="checkbox" id="show-preview" checked />
-                  <label for="show-preview">Show message preview</label>
-                </div>
-              </fieldset>
-            </div>
-
-            <!-- Accounts Tab -->
-            <input class="radiotab" name="settings-tabs" type="radio" id="settings-accounts" />
-            <label class="label" for="settings-accounts">Accounts</label>
-            <div class="panel">
-              <p>No accounts configured. Add an account to get started.</p>
-              <button class="cs-btn">+ Add Account</button>
-            </div>
-
-            <!-- Filters Tab -->
-            <input class="radiotab" name="settings-tabs" type="radio" id="settings-filters" />
-            <label class="label" for="settings-filters">Filters</label>
-            <div class="panel">
-              <p>Configure email filter rules.</p>
-              <button class="cs-btn">+ New Filter</button>
-            </div>
-          </div>
-        </div>
-        <menu class="footer-btns">
-          <button type="button" class="cs-btn" onclick="this.closest('dialog').close()">Close</button>
-        </menu>
-      </form>
-    </dialog>
-
-    <!-- Progress Bar for uploads/downloads -->
-    <div class="transmission-progress" id="transmission-progress" style="display: none;">
+    <div class="transmission-progress" id="transmission-progress" hidden>
+      <div class="transmission-progress__head">
+        <span id="transmission-label">TRANSMITTING PAYLOAD</span>
+        <span id="transmission-stat">0%</span>
+      </div>
       <div class="cs-progress-bar">
-        <div class="bars" id="progress-bars" style="width: 0%"></div>
+        <div class="bars" id="progress-bars" style="width: 0%;"></div>
       </div>
     </div>
 

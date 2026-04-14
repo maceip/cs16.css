@@ -1,680 +1,1269 @@
-// ============================================================================
-// LIBRARY IMPORTS
-// ============================================================================
-// VanJS - Reactive state management and component rendering (zero dependencies)
-import van from 'vanjs-core';
-// Mousetrap - Keyboard shortcuts (j/k navigation, c compose, e archive, etc)
-import Mousetrap from 'mousetrap';
-// Split.js - Resizable panes (no dependencies, desktop-style layout)
-import Split from 'split.js';
-// Pell - Lightweight rich text editor for email composition
-import pell from 'pell';
-// TreeSelect - Hierarchical folder picker for move/label operations
-import TreeSelect from 'treeselectjs';
-// DOMPurify - Sanitizes email HTML to prevent XSS attacks
-import DOMPurify from 'dompurify';
-// Pikaday - Lightweight date picker (no jQuery required)
-import Pikaday from 'pikaday';
+import van from "vanjs-core";
+import Mousetrap from "mousetrap";
+import Split from "split.js";
+import DOMPurify from "dompurify";
 
-const { div, span, p, button, input, label, nav, h3, h2, section, aside, hr } = van.tags;
+const {
+  a,
+  article,
+  aside,
+  button,
+  div,
+  fieldset,
+  h2,
+  input,
+  label,
+  legend,
+  li,
+  menu,
+  option,
+  p,
+  section,
+  select,
+  span,
+  svg,
+  text,
+  textarea,
+  ul,
+  path,
+} = van.tags;
 
-// ============================================================================
-// APP STATE MANAGEMENT
-// ============================================================================
+const now = Date.now();
 
-const appState = {
-  folders: van.state([
-    { id: 'inbox', name: 'Inbox', unreadCount: van.state(12), isActive: van.state(true) },
-    { id: 'sent', name: 'Sent', unreadCount: van.state(0), isActive: van.state(false) },
-    { id: 'drafts', name: 'Drafts', unreadCount: van.state(3), isActive: van.state(false) },
-    { id: 'spam', name: 'Spam', unreadCount: van.state(0), isActive: van.state(false) },
-    { id: 'trash', name: 'Trash', unreadCount: van.state(5), isActive: van.state(false) },
-  ]),
+const folderDefinitions = [
+  { id: "inbox", name: "Inbox", type: "system", status: "#78ff5d" },
+  { id: "priority", name: "Priority", type: "system", status: "#c4b550" },
+  { id: "sent", name: "Sent", type: "system", status: "#9fb2ff" },
+  { id: "drafts", name: "Drafts", type: "system", status: "#d8ded3" },
+  { id: "archives", name: "Archives", type: "system", status: "#7f8c7f" },
+  { id: "trash", name: "Trash", type: "system", status: "#c3876c" },
+  { id: "ops", name: "Ops", type: "tag", status: "#78ff5d" },
+  { id: "supply", name: "Supply", type: "tag", status: "#d1b96e" },
+  { id: "intel", name: "Intel", type: "tag", status: "#93d7ff" },
+];
 
-  messages: van.state([
-    {
-      id: 'msg1',
-      from: 'alice@example.com',
-      to: 'user@example.com',
-      subject: 'Project Update - Q1 Review',
-      body: '<p>Hi,</p><p>Here is the project status update for Q1. Everything is on track.</p><p>Best regards,<br/>Alice</p>',
-      timestamp: new Date(Date.now() - 3600000),
-      isRead: van.state(false),
-      isSelected: van.state(false),
-      folderId: 'inbox',
-    },
-    {
-      id: 'msg2',
-      from: 'bob@company.com',
-      to: 'user@example.com',
-      subject: 'Meeting Notes - Design Review',
-      body: '<p>Thanks for joining the design review meeting. The feedback was very helpful.</p>',
-      timestamp: new Date(Date.now() - 7200000),
-      isRead: van.state(true),
-      isSelected: van.state(false),
-      folderId: 'inbox',
-    },
-    {
-      id: 'msg3',
-      from: 'carol@startup.io',
-      to: 'user@example.com',
-      subject: 'Partnership Opportunity',
-      body: '<p>We are interested in exploring a partnership with your organization...</p>',
-      timestamp: new Date(Date.now() - 86400000),
-      isRead: van.state(false),
-      isSelected: van.state(false),
-      folderId: 'inbox',
-    },
-  ]),
-
-  selectedFolder: van.state('inbox'),
-  selectedMessage: van.state(null),
-  showCompose: van.state(false),
-  showSettings: van.state(false),
-  uploadProgress: van.state(0),
-  searchQuery: van.state(''),
-
-  // Date filtering
-  dateFilterStart: van.state(null),
-  dateFilterEnd: van.state(null),
-};
-
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
-function setActiveFolder(folderId) {
-  appState.folders.val.forEach(folder => {
-    folder.isActive.val = folder.id === folderId;
-  });
-  appState.selectedFolder.val = folderId;
-  appState.selectedMessage.val = null;
+function createMessage({
+  id,
+  folderId,
+  from,
+  email,
+  subject,
+  preview,
+  body,
+  minutesAgo,
+  priority = false,
+  attachments = 0,
+  plain = "",
+  headers = "",
+}) {
+  return {
+    id,
+    folderId,
+    from,
+    email,
+    to: "cmd@cs16.css",
+    subject,
+    preview,
+    body,
+    plain,
+    headers,
+    timestamp: new Date(now - minutesAgo * 60000),
+    priority,
+    attachments,
+    isRead: van.state(folderId === "sent" || folderId === "archives"),
+    isFlipped: van.state(false),
+  };
 }
 
-function selectMessage(messageId) {
-  appState.selectedMessage.val = messageId;
-  const msg = appState.messages.val.find(m => m.id === messageId);
-  if (msg) {
-    msg.isRead.val = true;
-  }
+const seedMessages = [
+  createMessage({
+    id: "m1",
+    folderId: "inbox",
+    from: "Quartermaster Vega",
+    email: "vega@blackmesa.mil",
+    subject: "Attachment cache refreshed for foldable rollout",
+    preview: "Bar widths tuned for compact screens and dual-pane hinges.",
+    body: `
+      <p>Operator,</p>
+      <p>The attachment relay was recalibrated for compact screens, foldables, and full desktop width. The progress rail now mirrors the old precaching bar: short, bright, and noisy on purpose.</p>
+      <p>Verify the compose console on hinge widths before release.</p>
+    `,
+    plain: "The attachment relay was recalibrated for compact screens, foldables, and full desktop width.",
+    headers: "X-Priority: routine\nX-Relay-Node: CACHE-07\nX-Theme: cs16",
+    minutesAgo: 11,
+    attachments: 2,
+  }),
+  createMessage({
+    id: "m2",
+    folderId: "priority",
+    from: "Cmdr. Ortiz",
+    email: "ortiz@command.local",
+    subject: "Priority influx at 1900 hours",
+    preview: "HUD pulse requested whenever a green-flag dispatch lands in queue.",
+    body: `
+      <p>Maintain maximum contrast.</p>
+      <p>When a priority email lands, the interface should react like incoming fire: border pulse, bright phosphor count, and a short feed entry in the lower-left corner.</p>
+      <p>Do not soften it.</p>
+    `,
+    plain: "When a priority email lands, the interface should react like incoming fire.",
+    headers: "X-Priority: immediate\nX-Alert-Class: PRTY_INFLUX\nX-HUD: enabled",
+    minutesAgo: 3,
+    priority: true,
+  }),
+  createMessage({
+    id: "m3",
+    folderId: "inbox",
+    from: "Lt. Nakamura",
+    email: "nakamura@ops.grid",
+    subject: "Swipe and flip gestures approved",
+    preview: "The ledger can stay dense as long as hover, reveal, and delete remain crisp.",
+    body: `
+      <p>Keep the rows compact.</p>
+      <p>Swiping should expose destructive actions; flipping should reveal metadata without leaving the list. Utility first.</p>
+    `,
+    plain: "Swiping should expose destructive actions; flipping should reveal metadata without leaving the list.",
+    headers: "X-Priority: tactical\nX-Interaction: swipe,flip",
+    minutesAgo: 29,
+    attachments: 1,
+  }),
+  createMessage({
+    id: "m4",
+    folderId: "ops",
+    from: "Recon Delta",
+    email: "delta@ops.grid",
+    subject: "Reader tabs for HTML / text / headers",
+    preview: "The reading pane should feel like a dossier, not a blog post.",
+    body: `
+      <p>The reader is approved as a three-tab dossier.</p>
+      <p>Use the legend for sender and timestamp so the message body feels contained, filed, and mission-ready.</p>
+    `,
+    plain: "Use the legend for sender and timestamp so the message body feels contained, filed, and mission-ready.",
+    headers: "X-Priority: medium\nX-Dossier-Look: approved",
+    minutesAgo: 53,
+  }),
+  createMessage({
+    id: "m5",
+    folderId: "supply",
+    from: "Supply Chain Relay",
+    email: "supply@relay.zone",
+    subject: "Dock inventory icons for command tray",
+    preview: "Hover scaling and phosphor tooltips remain consistent with the main shell.",
+    body: `
+      <p>The bottom dock should read like a loadout bar.</p>
+      <p>Close neighbors may scale slightly, but the active icon gets the full jump.</p>
+    `,
+    plain: "The bottom dock should read like a loadout bar.",
+    headers: "X-Priority: routine\nX-Dock: enabled",
+    minutesAgo: 112,
+  }),
+  createMessage({
+    id: "m6",
+    folderId: "sent",
+    from: "You",
+    email: "cmd@cs16.css",
+    subject: "Prototype status for modern primitives",
+    preview: "Animated numbers, spotlight, tilt, and morph popovers all landed in the brief.",
+    body: `
+      <p>Status is green.</p>
+      <p>The modern primitives can coexist with the 1.6 shell as long as motion is sharp, bounded, and optional under reduced-motion preferences.</p>
+    `,
+    plain: "The modern primitives can coexist with the 1.6 shell.",
+    headers: "X-Priority: sent\nX-Status: green",
+    minutesAgo: 240,
+  }),
+  createMessage({
+    id: "m7",
+    folderId: "drafts",
+    from: "You",
+    email: "cmd@cs16.css",
+    subject: "Compose dialog copy draft",
+    preview: "Need final wording for the command console footer actions.",
+    body: `
+      <p>Send stays primary.</p>
+      <p>Discard should visually align with the close button treatment without becoming invisible.</p>
+    `,
+    plain: "Send stays primary. Discard should visually align with the close button treatment.",
+    headers: "X-Priority: draft\nX-Next-Step: finalize copy",
+    minutesAgo: 380,
+  }),
+  createMessage({
+    id: "m8",
+    folderId: "intel",
+    from: "Signals Unit",
+    email: "signals@intel.cluster",
+    subject: "Scroll progress visible during dossier review",
+    preview: "Long-form reading sessions need the same tactical readout as map loading.",
+    body: `
+      <p>Scrolling is part of the interaction model.</p>
+      <p>Add a top-edge bar that reports reading progress without introducing modern softness.</p>
+    `,
+    plain: "Add a top-edge bar that reports reading progress.",
+    headers: "X-Priority: medium\nX-Tracking: scroll",
+    minutesAgo: 92,
+  }),
+];
+
+const appState = {
+  folders: van.state(folderDefinitions),
+  messages: van.state(seedMessages),
+  selectedFolder: van.state("inbox"),
+  selectedMessageId: van.state("m1"),
+  searchQuery: van.state(""),
+  readerTab: van.state("html"),
+  mobilePane: van.state("ledger"),
+  transmissionProgress: van.state(0),
+  transmissionLabel: van.state("TRANSMITTING PAYLOAD"),
+  hudCount: van.state(1),
+  hudLogs: van.state([
+    "[SYS] Priority channel armed.",
+    "[SYS] Foldable layout calibration complete.",
+    "[SYS] Inbox ledger hover offset tuned.",
+  ]),
+  metrics: {
+    unread: van.state(0),
+    priority: van.state(0),
+    attachments: van.state(0),
+  },
+  sliderDigits: {
+    a: van.state(1),
+    b: van.state(6),
+    c: van.state(3),
+  },
+};
+
+let splitInstance = null;
+let transmissionTimer = null;
+let hudTimer = null;
+let motionRaf = 0;
+let metricsInterval = null;
+
+function updateMetrics() {
+  const messages = appState.messages.val;
+  appState.metrics.unread.val = messages.filter(
+    (message) => !message.isRead.val && message.folderId !== "sent"
+  ).length;
+  appState.metrics.priority.val = messages.filter(
+    (message) => message.priority && !message.isRead.val
+  ).length;
+  appState.metrics.attachments.val = messages.reduce(
+    (sum, message) => sum + message.attachments,
+    0
+  );
+  appState.hudCount.val = appState.metrics.priority.val;
+}
+
+function folderUnreadCount(folderId) {
+  return appState.messages.val.filter(
+    (message) => message.folderId === folderId && !message.isRead.val
+  ).length;
+}
+
+function folderMessageCount(folderId) {
+  return appState.messages.val.filter((message) => message.folderId === folderId).length;
 }
 
 function getVisibleMessages() {
-  const currentFolder = appState.selectedFolder.val;
-  return appState.messages.val.filter(msg => msg.folderId === currentFolder);
+  const folderId = appState.selectedFolder.val;
+  const search = appState.searchQuery.val.trim().toLowerCase();
+  return appState.messages.val
+    .filter((message) => message.folderId === folderId)
+    .filter((message) => {
+      if (!search) return true;
+      return [message.from, message.subject, message.preview, message.plain]
+        .join(" ")
+        .toLowerCase()
+        .includes(search);
+    })
+    .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime());
 }
 
-function formatTime(date) {
-  const now = new Date();
-  const diff = now - date;
+function getSelectedMessage() {
+  return appState.messages.val.find(
+    (message) => message.id === appState.selectedMessageId.val
+  );
+}
+
+function formatRelativeTime(date) {
+  const diff = Date.now() - date.getTime();
   const minutes = Math.floor(diff / 60000);
   const hours = Math.floor(diff / 3600000);
   const days = Math.floor(diff / 86400000);
 
-  if (minutes < 1) return 'now';
-  if (minutes < 60) return `${minutes}m ago`;
-  if (hours < 24) return `${hours}h ago`;
-  if (days < 7) return `${days}d ago`;
-  return date.toLocaleDateString();
+  if (minutes < 1) return "NOW";
+  if (minutes < 60) return `${minutes}M`;
+  if (hours < 24) return `${hours}H`;
+  if (days < 7) return `${days}D`;
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" }).toUpperCase();
 }
 
-// ============================================================================
-// COMPONENT: FOLDER NAV (VanJS Reactive)
-// ============================================================================
-// Uses VanJS state reactivity: folder.isActive.val updates trigger re-renders
-// Uses VanJS computed classes: class: () => ... re-evaluates on state change
-// This is a responsive component that updates when folders or unread counts change
+function formatFullDate(date) {
+  return date.toLocaleString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
-function FolderNav() {
-  return nav(
-    { class: 'folder-nav' },
-    () =>
-      appState.folders.val.map(folder =>
-        div(
-          {
-            class: () => `folder-item ${folder.isActive.val ? 'active' : ''}`,
-            onclick: () => setActiveFolder(folder.id),
-          },
-          span({ class: 'folder-item-name' }, folder.name),
-          folder.unreadCount.val > 0
-            ? span({ class: 'folder-item-count' }, folder.unreadCount.val)
-            : null
-        )
-      )
+function ensureSelectedMessage() {
+  const visible = getVisibleMessages();
+  if (!visible.length) {
+    appState.selectedMessageId.val = null;
+    return;
+  }
+
+  const current = visible.find((message) => message.id === appState.selectedMessageId.val);
+  if (!current) {
+    appState.selectedMessageId.val = visible[0].id;
+  }
+}
+
+function setActiveFolder(folderId) {
+  appState.selectedFolder.val = folderId;
+  ensureSelectedMessage();
+  if (window.matchMedia("(max-width: 820px)").matches) {
+    setMobilePane("ledger");
+  }
+}
+
+function setMobilePane(pane) {
+  appState.mobilePane.val = pane;
+  document.body.dataset.mobilePane = pane;
+}
+
+function selectMessage(messageId) {
+  const message = appState.messages.val.find((entry) => entry.id === messageId);
+  if (!message) return;
+  appState.selectedMessageId.val = messageId;
+  message.isRead.val = true;
+  appState.readerTab.val = "html";
+  updateMetrics();
+
+  if (window.matchMedia("(max-width: 820px)").matches) {
+    setMobilePane("reader");
+  }
+}
+
+function deleteMessage(messageId) {
+  appState.messages.val = appState.messages.val.filter((message) => message.id !== messageId);
+  if (appState.selectedMessageId.val === messageId) {
+    appState.selectedMessageId.val = null;
+  }
+  ensureSelectedMessage();
+  updateMetrics();
+}
+
+function archiveMessage(messageId) {
+  const nextMessages = appState.messages.val.map((message) => {
+    if (message.id !== messageId) return message;
+    return { ...message, folderId: "archives" };
+  });
+  appState.messages.val = nextMessages;
+  ensureSelectedMessage();
+  updateMetrics();
+}
+
+function toggleFlip(message) {
+  message.isFlipped.val = !message.isFlipped.val;
+}
+
+function queueHudLog(text, alert = false) {
+  appState.hudLogs.val = [`[SYS] ${text}`, ...appState.hudLogs.val].slice(0, 4);
+  const overlay = document.getElementById("hud-overlay");
+  if (!overlay) return;
+  if (alert) {
+    overlay.classList.add("is-alert");
+    clearTimeout(hudTimer);
+    hudTimer = window.setTimeout(() => overlay.classList.remove("is-alert"), 1800);
+  }
+}
+
+function openComposeDialog() {
+  const dialog = document.getElementById("compose-dialog");
+  if (!dialog?.showModal) return;
+  setDialogOrigin(dialog, document.getElementById("new-message-btn"));
+  dialog.showModal();
+}
+
+function closeDialog(dialogId) {
+  const dialog = document.getElementById(dialogId);
+  if (dialog?.open) dialog.close();
+}
+
+function setDialogOrigin(dialog, trigger) {
+  if (!dialog || !trigger) return;
+  const rect = trigger.getBoundingClientRect();
+  dialog.style.setProperty("--dialog-origin-x", `${rect.left + rect.width / 2}px`);
+  dialog.style.setProperty("--dialog-origin-y", `${rect.top + rect.height / 2}px`);
+}
+
+function showTransmission(labelText) {
+  const progressShell = document.getElementById("transmission-progress");
+  const progressBar = document.getElementById("progress-bars");
+  if (!progressShell || !progressBar) return;
+
+  clearInterval(transmissionTimer);
+  appState.transmissionLabel.val = labelText;
+  appState.transmissionProgress.val = 0;
+  progressShell.hidden = false;
+  progressBar.style.width = "0%";
+
+  transmissionTimer = window.setInterval(() => {
+    const next = Math.min(100, appState.transmissionProgress.val + Math.ceil(Math.random() * 18));
+    appState.transmissionProgress.val = next;
+    progressBar.style.width = `${next}%`;
+    if (next >= 100) {
+      clearInterval(transmissionTimer);
+      queueHudLog("Payload transmitted.", true);
+      window.setTimeout(() => {
+        progressShell.hidden = true;
+      }, 700);
+    }
+  }, 120);
+}
+
+function sendComposeMessage() {
+  const to = document.getElementById("compose-to")?.value.trim();
+  const subject = document.getElementById("compose-subject")?.value.trim();
+  const rawBody = document.getElementById("compose-body")?.value.trim();
+
+  if (!to || !subject) {
+    queueHudLog("Compose fields incomplete.", true);
+    return;
+  }
+
+  const sanitizedBody = DOMPurify.sanitize(
+    `<p>${(rawBody || "No message body entered.")
+      .split(/\n{2,}/)
+      .map((chunk) => chunk.replace(/\n/g, "<br />"))
+      .join("</p><p>")}</p>`
+  );
+
+  const message = createMessage({
+    id: `sent-${Date.now()}`,
+    folderId: "sent",
+    from: "You",
+    email: "cmd@cs16.css",
+    subject,
+    preview: rawBody || "No message body entered.",
+    body: sanitizedBody,
+    plain: rawBody || "No message body entered.",
+    headers: `X-Priority: sent\nX-Recipient: ${to}\nX-Origin: compose-console`,
+    minutesAgo: 0,
+  });
+
+  appState.messages.val = [message, ...appState.messages.val];
+  updateMetrics();
+  closeDialog("compose-dialog");
+
+  document.getElementById("compose-to").value = "";
+  document.getElementById("compose-subject").value = "";
+  document.getElementById("compose-body").value = "";
+
+  setActiveFolder("sent");
+  appState.selectedMessageId.val = message.id;
+  showTransmission("TRANSMITTING PAYLOAD");
+}
+
+function insertTemplate(value) {
+  const composeBody = document.getElementById("compose-body");
+  if (!composeBody) return;
+  composeBody.value = composeBody.value ? `${composeBody.value}\n\n${value}` : value;
+}
+
+function applyQuickAction(action) {
+  if (action === "priority") {
+    setActiveFolder("priority");
+    queueHudLog("Priority channel focused.", true);
+  }
+  if (action === "compose") {
+    openComposeDialog();
+  }
+  if (action === "reader") {
+    setMobilePane("reader");
+    document.getElementById("reading-pane")?.scrollIntoView({ block: "start", behavior: "smooth" });
+  }
+}
+
+function navigateMessages(step) {
+  const visible = getVisibleMessages();
+  if (!visible.length) return;
+  const currentIndex = visible.findIndex(
+    (message) => message.id === appState.selectedMessageId.val
+  );
+  const fallbackIndex = currentIndex === -1 ? 0 : currentIndex;
+  const nextIndex = Math.max(0, Math.min(visible.length - 1, fallbackIndex + step));
+  selectMessage(visible[nextIndex].id);
+}
+
+function FolderSidebar() {
+  const groups = () => ({
+    system: appState.folders.val.filter((folder) => folder.type === "system"),
+    tag: appState.folders.val.filter((folder) => folder.type === "tag"),
+  });
+
+  const renderFolder = (folder) =>
+    button(
+      {
+        type: "button",
+        class: () =>
+          `cs-btn cs-sidebar__item cs-magnetic ${
+            appState.selectedFolder.val === folder.id ? "is-active" : ""
+          }`,
+        style: `--status: ${folder.status};`,
+        onclick: () => setActiveFolder(folder.id),
+      },
+      span(
+        { class: "cs-sidebar__lead" },
+        span({ class: "cs-sidebar__status", "aria-hidden": "true" }),
+        span({ class: "cs-sidebar__name" }, folder.name)
+      ),
+      span({ class: "cs-sidebar__count" }, () => folderMessageCount(folder.id))
+    );
+
+  return div(
+    { class: "cs-sidebar" },
+    div(
+      { class: "cs-sidebar__group" },
+      span({ class: "cs-sidebar__label" }, "SYSTEM"),
+      () => groups().system.map(renderFolder)
+    ),
+    div(
+      { class: "sidebar-separator" },
+      (() => {
+        const hrEl = document.createElement("hr");
+        hrEl.className = "cs-hr";
+        return hrEl;
+      })()
+    ),
+    div(
+      { class: "cs-sidebar__group" },
+      span({ class: "cs-sidebar__label" }, "CUSTOM TAGS"),
+      () => groups().tag.map(renderFolder)
+    )
   );
 }
 
-// ============================================================================
-// COMPONENT: MESSAGE LIST (VanJS Reactive)
-// ============================================================================
-// Uses VanJS computed rendering: () => getVisibleMessages().map(...)
-// Filters messages based on selectedFolder.val
-// Updates dynamically when messages added/removed or folder changes
-// Shows read/unread state via msg.isRead.val reactivity
-
-function MessageList() {
+function MessageRow(message) {
   return div(
-    { class: 'message-list' },
-    () =>
-      getVisibleMessages().map(msg =>
+    {
+      class: () =>
+        `cs-inbox-row ${message.isRead.val ? "" : "is-unread"} ${
+          appState.selectedMessageId.val === message.id ? "is-selected" : ""
+        } ${message.isFlipped.val ? "is-flipped" : ""}`,
+      tabindex: "0",
+      onkeydown: (event) => {
+        if (event.key === "Enter") selectMessage(message.id);
+        if (event.key.toLowerCase() === "f") toggleFlip(message);
+        if (event.key === "Delete" || event.key === "Backspace") deleteMessage(message.id);
+      },
+      onpointerdown: (event) => initSwipe(event, message.id),
+    },
+    div(
+      { class: "cs-inbox-row__rail" },
+      button(
+        {
+          type: "button",
+          class: "cs-btn",
+          onclick: (event) => {
+            event.stopPropagation();
+            archiveMessage(message.id);
+          },
+        },
+        "Archive"
+      ),
+      button(
+        {
+          type: "button",
+          class: "cs-btn",
+          onclick: (event) => {
+            event.stopPropagation();
+            deleteMessage(message.id);
+          },
+        },
+        "Delete"
+      )
+    ),
+    div(
+      { class: "cs-inbox-row__card" },
+      div(
+        { class: "cs-inbox-row__cube" },
         div(
           {
-            class: () => {
-              const classes = ['message-row'];
-              if (!msg.isRead.val) classes.push('unread');
-              if (appState.selectedMessage.val === msg.id) classes.push('selected');
-              return classes.join(' ');
-            },
-            onclick: () => selectMessage(msg.id),
+            class: "cs-inbox-row__face cs-inbox-row__face--front",
+            onclick: () => selectMessage(message.id),
           },
           div(
-            { class: 'message-content' },
-            span({ class: 'message-sender' }, msg.from),
-            span({ class: 'message-subject' }, msg.subject)
+            { class: "cs-inbox-row__surface" },
+            label(
+              { class: "cs-checkbox", onclick: (event) => event.stopPropagation() },
+              input({
+                type: "checkbox",
+                checked: () => appState.selectedMessageId.val === message.id,
+                onchange: () => selectMessage(message.id),
+              }),
+              span({ class: "cs-checkbox__label" }, "")
+            ),
+            div(
+              { class: "cs-inbox-row__content" },
+              div(
+                { class: "cs-inbox-row__header" },
+                span({ class: "cs-inbox-row__sender" }, message.from),
+                message.priority
+                  ? span({ class: "cs-inbox-row__chip is-priority" }, "PRIORITY")
+                  : null,
+                message.attachments
+                  ? span(
+                      { class: "cs-inbox-row__chip" },
+                      `${message.attachments} ATTACH`
+                    )
+                  : null
+              ),
+              div({ class: "cs-inbox-row__subject" }, message.subject),
+              div({ class: "cs-inbox-row__preview" }, message.preview)
+            ),
+            button(
+              {
+                type: "button",
+                class: "cs-btn cs-inbox-row__flip",
+                onclick: (event) => {
+                  event.stopPropagation();
+                  toggleFlip(message);
+                },
+              },
+              () => (message.isFlipped.val ? "Front" : "Flip")
+            ),
+            span({ class: "cs-inbox-row__stamp" }, formatRelativeTime(message.timestamp))
+          )
+        ),
+        div(
+          { class: "cs-inbox-row__face cs-inbox-row__face--back" },
+          div(
+            { class: "flip-back-copy" },
+            p(null, `FROM: ${message.email}`),
+            p(null, `TO: ${message.to}`),
+            p(null, `HEADERS: ${message.headers.split("\n")[0]}`)
           ),
-          span({ class: 'message-time' }, formatTime(msg.timestamp))
+          div(
+            { class: "cs-inbox-row__back-actions" },
+            button(
+              {
+                type: "button",
+                class: "cs-btn",
+                onclick: () => selectMessage(message.id),
+              },
+              "Open"
+            ),
+            button(
+              {
+                type: "button",
+                class: "cs-btn",
+                onclick: () => toggleFlip(message),
+              },
+              "Close"
+            )
+          )
         )
       )
+    )
   );
 }
 
-// ============================================================================
-// COMPONENT: READING PANE (VanJS + DOMPurify)
-// ============================================================================
-// Uses VanJS computed rendering: finds selected message and re-renders on change
-// Uses DOMPurify.sanitize() to safely render HTML email bodies
-// Prevents XSS attacks by stripping malicious script tags and event handlers
-// Only whitelisted HTML tags (p, a, strong, em, br, etc) are allowed through
-
-function ReadingPane() {
+function InboxLedger() {
   return div(
-    { class: 'reading-pane-content' },
+    { class: "cs-inbox" },
     () => {
-      const selectedMsg = appState.messages.val.find(m => m.id === appState.selectedMessage.val);
-
-      if (!selectedMsg) {
+      const visibleMessages = getVisibleMessages();
+      if (!visibleMessages.length) {
         return div(
-          { class: 'no-selection' },
-          p(null, 'Select a message to read')
+          { class: "empty-state" },
+          p(null, "No dispatches in this folder."),
+          p(null, "Use Quick Actions or compose a fresh message.")
+        );
+      }
+      return visibleMessages.map(MessageRow);
+    }
+  );
+}
+
+function ReaderTabs() {
+  const selected = () => getSelectedMessage();
+  return div(
+    { class: "reader-shell" },
+    () => {
+      const message = selected();
+      if (!message) {
+        return div(
+          { class: "no-selection" },
+          p(null, "Select a message to open the dossier.")
         );
       }
 
-      return div(
+      return fieldset(
+        { class: "cs-fieldset cs-dossier" },
+        legend(null, `${message.from} // ${formatFullDate(message.timestamp)}`),
         div(
-          { class: 'message-metadata' },
+          { class: "cs-dossier__meta" },
           div(
-            { class: 'message-metadata-row' },
-            span({ class: 'metadata-label' }, 'From:'),
-            span({ class: 'metadata-value' }, selectedMsg.from)
+            { class: "cs-dossier__row" },
+            span({ class: "cs-dossier__label" }, "Sender"),
+            span({ class: "cs-dossier__value" }, `${message.from} <${message.email}>`)
           ),
           div(
-            { class: 'message-metadata-row' },
-            span({ class: 'metadata-label' }, 'To:'),
-            span({ class: 'metadata-value' }, selectedMsg.to)
+            { class: "cs-dossier__row" },
+            span({ class: "cs-dossier__label" }, "Subject"),
+            span({ class: "cs-dossier__value" }, message.subject)
           ),
           div(
-            { class: 'message-metadata-row' },
-            span({ class: 'metadata-label' }, 'Date:'),
-            span({ class: 'metadata-value' }, selectedMsg.timestamp.toLocaleString())
+            { class: "cs-dossier__row" },
+            span({ class: "cs-dossier__label" }, "Priority"),
+            span(
+              { class: "cs-dossier__value" },
+              message.priority ? "Immediate" : "Routine"
+            )
           ),
           div(
-            { class: 'message-metadata-row' },
-            span({ class: 'metadata-label' }, 'Subject:'),
-            span({ class: 'metadata-value' }, selectedMsg.subject)
+            { class: "cs-dossier__row" },
+            span({ class: "cs-dossier__label" }, "Attachments"),
+            span({ class: "cs-dossier__value" }, `${message.attachments}`)
           )
         ),
-        // DOMPurify sanitizes HTML email bodies to prevent XSS attacks
-        // Only safe HTML tags are allowed through (p, strong, em, a, br, etc)
         div(
-          { class: 'message-body' },
-          { innerHTML: DOMPurify.sanitize(selectedMsg.body) }
+          { class: "cs-tabs reader-tabs" },
+          input({
+            class: "radiotab",
+            type: "radio",
+            id: "reader-tab-html",
+            name: "reader-tabs",
+            checked: () => appState.readerTab.val === "html",
+            onchange: () => {
+              appState.readerTab.val = "html";
+            },
+          }),
+          label({ class: "label", for: "reader-tab-html" }, "HTML"),
+          div(
+            { class: "panel" },
+            div({
+              class: "reader-panel-copy",
+              innerHTML: DOMPurify.sanitize(message.body),
+            })
+          ),
+          input({
+            class: "radiotab",
+            type: "radio",
+            id: "reader-tab-plain",
+            name: "reader-tabs",
+            checked: () => appState.readerTab.val === "plain",
+            onchange: () => {
+              appState.readerTab.val = "plain";
+            },
+          }),
+          label({ class: "label", for: "reader-tab-plain" }, "Plain Text"),
+          div({ class: "panel reader-panel-copy" }, message.plain || message.preview),
+          input({
+            class: "radiotab",
+            type: "radio",
+            id: "reader-tab-headers",
+            name: "reader-tabs",
+            checked: () => appState.readerTab.val === "headers",
+            onchange: () => {
+              appState.readerTab.val = "headers";
+            },
+          }),
+          label({ class: "label", for: "reader-tab-headers" }, "Headers"),
+          div({ class: "panel reader-panel-copy reader-panel-copy--mono" }, message.headers)
         ),
         div(
-          { class: 'reading-pane-actions' },
-          (() => {
-            const replyBtn = document.createElement('button');
-            replyBtn.className = 'cs-btn';
-            replyBtn.textContent = 'Reply';
-            replyBtn.onclick = () => {
-              document.getElementById('compose-dialog').showModal();
-              setTimeout(initializePellEditor, 100);
-            };
-            return replyBtn;
-          })(),
-          (() => {
-            const archiveBtn = document.createElement('button');
-            archiveBtn.className = 'cs-btn';
-            archiveBtn.textContent = 'Archive';
-            archiveBtn.onclick = () => {
-              appState.messages.val = appState.messages.val.filter(m => m.id !== selectedMsg.id);
-              appState.selectedMessage.val = null;
-            };
-            return archiveBtn;
-          })(),
-          (() => {
-            const moveBtn = document.createElement('button');
-            moveBtn.className = 'cs-btn';
-            moveBtn.textContent = 'Move';
-            moveBtn.onclick = () => document.getElementById('move-dialog').showModal();
-            return moveBtn;
-          })()
+          { class: "reading-pane-actions" },
+          button(
+            {
+              type: "button",
+              class: "cs-btn cs-magnetic",
+              onclick: () => {
+                document.getElementById("compose-to").value = message.email;
+                document.getElementById("compose-subject").value = `RE: ${message.subject}`;
+                openComposeDialog();
+              },
+            },
+            "Reply"
+          ),
+          button(
+            {
+              type: "button",
+              class: "cs-btn cs-magnetic",
+              onclick: () => archiveMessage(message.id),
+            },
+            "Archive"
+          ),
+          button(
+            {
+              type: "button",
+              class: "cs-btn cs-magnetic",
+              onclick: () => deleteMessage(message.id),
+            },
+            "Delete"
+          )
         )
       );
     }
   );
 }
 
-// ============================================================================
-// PELL EDITOR INITIALIZATION
-// ============================================================================
-// Pell: Lightweight, zero-dependency rich text editor
-// Features: bold, italic, underline, strikethrough, heading, quote, code, link
-// No external editor bloat - pure vanilla JS implementation
-// Integrates with VanJS state via onChange callback (stores HTML to dataset)
-
-function initializePellEditor() {
-  const editorContainer = document.getElementById('compose-editor');
-  if (editorContainer && editorContainer.children.length === 0) {
-    pell.init({
-      element: editorContainer,
-      onChange: html => {
-        // Store sanitized HTML content - will be sanitized again by DOMPurify on send
-        editorContainer.dataset.content = html;
-      },
-      defaultParagraphSeparator: 'p',
-      forceDefaultParagraphSeparator: true,
-    });
-  }
+function AnimatedStat(labelText, valueState) {
+  return div(
+    { class: "cs-animated-number cs-glow" },
+    span({ class: "cs-animated-number__label" }, labelText),
+    span({ class: "cs-animated-number__value" }, () => `${valueState.val}`)
+  );
 }
 
-// ============================================================================
-// FOLDER PICKER INITIALIZATION (TreeSelect.js)
-// ============================================================================
-// TreeSelect: Hierarchical folder/label picker - perfect for "move to folder" dialogs
-// Supports nested folder structures (Archives > 2024, 2025, etc)
-// Zero-dependency library with clean visual style matching cs16.css
-// Used for: move messages, apply labels, set filter targets
-
-function initializeFolderPicker() {
-  const pickerContainer = document.getElementById('folder-picker');
-  if (pickerContainer && pickerContainer.children.length === 0) {
-    const folderTree = [
-      { name: 'Inbox', id: 'inbox', children: [] },
-      { name: 'Sent', id: 'sent', children: [] },
-      { name: 'Drafts', id: 'drafts', children: [] },
-      { name: 'Spam', id: 'spam', children: [] },
-      { name: 'Trash', id: 'trash', children: [] },
-      {
-        name: 'Archives',
-        id: 'archives',
-        children: [
-          { name: '2024', id: 'archives-2024', children: [] },
-          { name: '2023', id: 'archives-2023', children: [] },
-        ],
-      },
-    ];
-
-    const ts = new TreeSelect({
-      elementId: 'folder-picker',
-      hasOptionDescription: false,
-      texts: {
-        placeholder: 'Select a folder...',
-        search: 'Search folders...',
-      },
-      options: folderTree,
-    });
-
-    pickerContainer.dataset.selectedFolder = null;
-    ts.onChange(() => {
-      const selected = ts.getSelectedOptions();
-      if (selected && selected.length > 0) {
-        pickerContainer.dataset.selectedFolder = selected[0].id;
-      }
-    });
-  }
-}
-
-// ============================================================================
-// PIKADAY DATE PICKER INITIALIZATION
-// ============================================================================
-// Pikaday: Lightweight date picker (no jQuery dependency)
-// Used for filtering messages by date range
-// Features: calendar UI, keyboard navigation, mobile-friendly
-
-function initializeDatePickers() {
-  const startDateInput = document.getElementById('date-filter-start');
-  const endDateInput = document.getElementById('date-filter-end');
-
-  if (startDateInput && !startDateInput.dataset.pikadayInit) {
-    const startPicker = new Pikaday({
-      field: startDateInput,
-      format: 'YYYY-MM-DD',
-      toString(date, format) {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${year}-${month}-${day}`;
-      },
-      parse(dateString, format) {
-        const parts = dateString.split('-');
-        return new Date(parts[0], parts[1] - 1, parts[2]);
-      },
-      onSelect: () => {
-        appState.dateFilterStart.val = startPicker.getDate();
-      },
-    });
-    startDateInput.dataset.pikadayInit = 'true';
-  }
-
-  if (endDateInput && !endDateInput.dataset.pikadayInit) {
-    const endPicker = new Pikaday({
-      field: endDateInput,
-      format: 'YYYY-MM-DD',
-      toString(date, format) {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${year}-${month}-${day}`;
-      },
-      parse(dateString, format) {
-        const parts = dateString.split('-');
-        return new Date(parts[0], parts[1] - 1, parts[2]);
-      },
-      onSelect: () => {
-        appState.dateFilterEnd.val = endPicker.getDate();
-      },
-    });
-    endDateInput.dataset.pikadayInit = 'true';
-  }
-}
-
-// ============================================================================
-// MOVE MESSAGE FUNCTIONALITY
-// ============================================================================
-
-function moveMessageToFolder(messageId, targetFolderId) {
-  const message = appState.messages.val.find(m => m.id === messageId);
-  if (message) {
-    message.folderId = targetFolderId;
-    appState.messages.val = [...appState.messages.val];
-    appState.selectedMessage.val = null;
-
-    const targetFolder = appState.folders.val.find(f => f.id === targetFolderId);
-    if (targetFolder && !message.isRead.val) {
-      targetFolder.unreadCount.val += 1;
-    }
-  }
-}
-
-// ============================================================================
-// KEYBOARD SHORTCUTS (Mousetrap.js)
-// ============================================================================
-// Mousetrap: Zero-dependency keyboard shortcut library
-// Perfect for mail client - Vim-like navigation and Gmail-inspired shortcuts
-// Shortcuts:
-//   g+i: Go to Inbox       | g+s: Go to Sent       | g+d: Go to Drafts
-//   j: Next message        | k: Previous message   | c: Compose
-//   e: Archive/Delete      | /: Focus search
-
-function initKeyboardShortcuts() {
-  Mousetrap.bind('g i', () => setActiveFolder('inbox'));
-  Mousetrap.bind('g s', () => setActiveFolder('sent'));
-  Mousetrap.bind('g d', () => setActiveFolder('drafts'));
-
-  Mousetrap.bind('c', () => {
-    document.getElementById('compose-dialog').showModal();
-    setTimeout(initializePellEditor, 100);
-  });
-
-  Mousetrap.bind('j', () => {
-    const messages = getVisibleMessages();
-    const currentIndex = messages.findIndex(m => m.id === appState.selectedMessage.val);
-    if (currentIndex < messages.length - 1) {
-      selectMessage(messages[currentIndex + 1].id);
-    }
-  });
-
-  Mousetrap.bind('k', () => {
-    const messages = getVisibleMessages();
-    const currentIndex = messages.findIndex(m => m.id === appState.selectedMessage.val);
-    if (currentIndex > 0) {
-      selectMessage(messages[currentIndex - 1].id);
-    }
-  });
-
-  Mousetrap.bind('e', () => {
-    if (appState.selectedMessage.val) {
-      const msg = appState.messages.val.find(m => m.id === appState.selectedMessage.val);
-      if (msg) {
-        appState.messages.val = appState.messages.val.filter(m => m.id !== msg.id);
-        appState.selectedMessage.val = null;
-      }
-    }
-  });
-
-  Mousetrap.bind('/', () => {
-    document.getElementById('search-input')?.focus();
-  });
-}
-
-// ============================================================================
-// INITIALIZATION (VanJS + Split.js)
-// ============================================================================
-// Mounts all VanJS components into DOM
-// Uses van.add() to attach reactive components to container elements
-// Initializes Split.js for resizable three-pane desktop layout
-// Split.js: Zero-dependency, drag-to-resize panes (no jQuery required)
-
-function init() {
-  const container = document.querySelector('.app-container');
-  if (container) {
-    // Clear container
-    container.innerHTML = '';
-
-    // Create sidebar with VanJS reactive folder navigation
-    const sidebar = document.createElement('aside');
-    sidebar.className = 'sidebar gutter';
-    container.appendChild(sidebar);
-    van.add(sidebar, () =>
+function SlidingNumber() {
+  const digits = [appState.sliderDigits.a, appState.sliderDigits.b, appState.sliderDigits.c];
+  return div(
+    { class: "cs-sliding-number" },
+    ...digits.map((digitState) =>
       div(
-        div({ class: 'sidebar-header' }, h3(null, 'FOLDERS')),
-        FolderNav(),
-        hr({ class: 'cs-hr' }),
+        { class: "cs-sliding-number__slot" },
         div(
-          { class: 'sidebar-footer' },
-          (() => {
-            const settingsBtn = document.createElement('button');
-            settingsBtn.className = 'cs-btn';
-            settingsBtn.textContent = 'Settings';
-            settingsBtn.id = 'settings-btn';
-            settingsBtn.onclick = () => document.getElementById('settings-dialog').showModal();
-            return settingsBtn;
-          })()
+          {
+            class: "cs-sliding-number__track",
+            style: () => `--digit:${digitState.val};`,
+          },
+          ...Array.from({ length: 10 }, (_, digit) => span(null, `${digit}`))
         )
       )
-    );
-
-    // Create message list pane with reactive message rendering
-    const messageListPane = document.createElement('section');
-    messageListPane.className = 'message-list-pane gutter';
-    container.appendChild(messageListPane);
-    van.add(messageListPane, () =>
-      div(
-        div({ class: 'list-header' }, h3(null, () => {
-          const folder = appState.folders.val.find(f => f.id === appState.selectedFolder.val);
-          return folder ? folder.name : 'Inbox';
-        })),
-        div(
-          { class: 'list-toolbar' },
-          (() => {
-            const searchInput = document.createElement('input');
-            searchInput.type = 'text';
-            searchInput.className = 'cs-input';
-            searchInput.placeholder = 'Search...';
-            searchInput.id = 'search-input';
-            return searchInput;
-          })(),
-          (() => {
-            const dateFilterBtn = document.createElement('button');
-            dateFilterBtn.className = 'cs-btn';
-            dateFilterBtn.textContent = 'Filter by Date';
-            dateFilterBtn.id = 'open-date-filter';
-            dateFilterBtn.onclick = () => document.getElementById('date-filter-dialog').showModal();
-            return dateFilterBtn;
-          })()
-        ),
-        hr({ class: 'cs-hr' }),
-        MessageList()
-      )
-    );
-
-    // Create reading pane with DOMPurify-safe HTML rendering
-    const readingPane = document.createElement('section');
-    readingPane.className = 'reading-pane gutter';
-    container.appendChild(readingPane);
-    van.add(readingPane, ReadingPane);
-
-    // Initialize Split.js for desktop-style resizable panes
-    // Provides smooth drag-to-resize between sidebar, list, and reading pane
-    setTimeout(() => {
-      const children = document.querySelectorAll('.app-container > *');
-      if (children.length === 3) {
-        Split(Array.from(children), {
-          sizes: [20, 50, 30],
-          minSize: [150, 200, 200],
-          gutterSize: 4,
-          gutterAlign: 'center',
-          direction: 'horizontal',
-        });
-      }
-    }, 0);
-  }
-
-  // Setup event listeners
-  const newMessageBtn = document.getElementById('new-message-btn');
-  if (newMessageBtn) {
-    newMessageBtn.addEventListener('click', () => {
-      document.getElementById('compose-dialog').showModal();
-      setTimeout(initializePellEditor, 100);
-    });
-  }
-
-  // Compose send button - demonstrates DOMPurify + Progress Bar
-  const composeSendBtn = document.getElementById('compose-send');
-  if (composeSendBtn) {
-    composeSendBtn.addEventListener('click', () => {
-      const to = document.getElementById('compose-to')?.value;
-      const subject = document.getElementById('compose-subject')?.value;
-      // Get HTML from Pell editor and sanitize it with DOMPurify before storage
-      // This ensures no scripts or malicious HTML is stored even if bypassed in editor
-      const rawBody = document.getElementById('compose-editor')?.dataset?.content || '<p>No message body</p>';
-      const body = DOMPurify.sanitize(rawBody);
-
-      if (to && subject) {
-        const newMessage = {
-          id: `msg${Date.now()}`,
-          from: 'user@example.com',
-          to: to,
-          subject: subject,
-          body: body, // Already sanitized by DOMPurify
-          timestamp: new Date(),
-          isRead: van.state(true),
-          isSelected: van.state(false),
-          folderId: 'sent',
-        };
-        appState.messages.val.unshift(newMessage);
-
-        document.getElementById('compose-dialog').close();
-        document.getElementById('compose-to').value = '';
-        document.getElementById('compose-cc').value = '';
-        document.getElementById('compose-bcc').value = '';
-        document.getElementById('compose-subject').value = '';
-        document.getElementById('compose-editor').innerHTML = '';
-
-        // Show cs-progress-bar during simulated upload
-        // This demonstrates the cs16.css progress bar component
-        appState.uploadProgress.val = 0;
-        document.getElementById('transmission-progress').style.display = 'block';
-        const progressBars = document.getElementById('progress-bars');
-
-        let progress = 0;
-        const interval = setInterval(() => {
-          progress += Math.random() * 30;
-          if (progress >= 100) {
-            progress = 100;
-            clearInterval(interval);
-            setTimeout(() => {
-              document.getElementById('transmission-progress').style.display = 'none';
-            }, 500);
-          }
-          if (progressBars) {
-            progressBars.style.width = progress + '%';
-          }
-        }, 100);
-      }
-    });
-  }
-
-  // Move dialog
-  const moveDialog = document.getElementById('move-dialog');
-  if (moveDialog) {
-    const originalShowModal = moveDialog.showModal;
-    moveDialog.showModal = function () {
-      initializeFolderPicker();
-      return originalShowModal.call(this);
-    };
-
-    const moveButtons = moveDialog.querySelectorAll('.footer-btns .cs-btn');
-    if (moveButtons.length > 0) {
-      moveButtons[0].addEventListener('click', () => {
-        const targetFolderId = document.getElementById('folder-picker')?.dataset?.selectedFolder;
-        if (targetFolderId && appState.selectedMessage.val) {
-          moveMessageToFolder(appState.selectedMessage.val, targetFolderId);
-          moveDialog.close();
-        }
-      });
-    }
-  }
-
-  // Date filter dialog with Pikaday
-  const dateFilterDialog = document.getElementById('date-filter-dialog');
-  if (dateFilterDialog) {
-    const originalShowModal = dateFilterDialog.showModal;
-    dateFilterDialog.showModal = function () {
-      setTimeout(initializeDatePickers, 100);
-      return originalShowModal.call(this);
-    };
-
-    const applyFilterBtn = document.getElementById('apply-date-filter');
-    if (applyFilterBtn) {
-      applyFilterBtn.addEventListener('click', () => {
-        // Filter messages by date range
-        if (appState.dateFilterStart.val || appState.dateFilterEnd.val) {
-          console.log('Filtering messages by date:', {
-            start: appState.dateFilterStart.val,
-            end: appState.dateFilterEnd.val,
-          });
-          dateFilterDialog.close();
-        } else {
-          alert('Please select at least one date');
-        }
-      });
-    }
-
-    const clearFilterBtn = document.getElementById('clear-date-filter');
-    if (clearFilterBtn) {
-      clearFilterBtn.addEventListener('click', () => {
-        appState.dateFilterStart.val = null;
-        appState.dateFilterEnd.val = null;
-        document.getElementById('date-filter-start').value = '';
-        document.getElementById('date-filter-end').value = '';
-      });
-    }
-  }
-
-  // Initialize keyboard shortcuts
-  initKeyboardShortcuts();
+    )
+  );
 }
 
-// Start app
-document.addEventListener('DOMContentLoaded', init);
+function HeaderStats() {
+  return div(
+    { class: "header-stats" },
+    AnimatedStat("Unread", appState.metrics.unread),
+    AnimatedStat("Priority", appState.metrics.priority),
+    div(
+      { class: "header-stats__sliding" },
+      span({ class: "header-stats__label" }, "Queue Depth"),
+      SlidingNumber()
+    )
+  );
+}
+
+function MobileSwitcher() {
+  const panes = [
+    { id: "sidebar", label: "Folders" },
+    { id: "ledger", label: "Ledger" },
+    { id: "reader", label: "Reader" },
+  ];
+
+  return div(
+    { class: "mobile-switcher" },
+    panes.map((pane) =>
+      button(
+        {
+          type: "button",
+          class: () =>
+            `cs-btn mobile-switcher__btn ${
+              appState.mobilePane.val === pane.id ? "is-active" : ""
+            }`,
+          onclick: () => setMobilePane(pane.id),
+        },
+        pane.label
+      )
+    )
+  );
+}
+
+function Dock() {
+  const items = [
+    { label: "Inbox", action: () => setActiveFolder("inbox") },
+    { label: "Priority", action: () => setActiveFolder("priority") },
+    { label: "Compose", action: () => openComposeDialog() },
+    { label: "Reader", action: () => setMobilePane("reader") },
+  ];
+
+  return div(
+    { class: "cs-dock" },
+    items.map((item) =>
+      button(
+        {
+          type: "button",
+          class: "cs-btn cs-dock__item cs-magnetic",
+          onclick: item.action,
+        },
+        span({ class: "cs-dock__tooltip" }, item.label),
+        item.label.slice(0, 2)
+      )
+    )
+  );
+}
+
+function ModernComponentsPanel() {
+  return section(
+    { class: "modern-panel" },
+    div(
+      { class: "pane-heading" },
+      p({ class: "pane-kicker" }, "Modern Primitives"),
+      h2(null, "Extended CS16 Component Suite")
+    ),
+    div(
+      { class: "modern-grid" },
+      section(
+        { class: "modern-card cs-spotlight", id: "spotlight-card" },
+        p({ class: "modern-card__kicker" }, "Glow / Spotlight / Tilt"),
+        div(
+          { class: "modern-card__stack cs-tilt", id: "tilt-card" },
+          button({ class: "cs-btn cs-glow cs-magnetic", type: "button" }, "Highlight")
+        ),
+        p(
+          { class: "modern-card__copy" },
+          "Spotlight tracks the pointer while the card tilts in shallow tactical parallax."
+        )
+      ),
+      section(
+        { class: "modern-card" },
+        p({ class: "modern-card__kicker" }, "Image Comparison"),
+        div(
+          { class: "cs-image-compare", id: "image-compare", style: "--split: 58%;" },
+          div({ class: "cs-image-compare__pane cs-image-compare__pane--base" }),
+          div({ class: "cs-image-compare__pane cs-image-compare__pane--overlay" }),
+          div({ class: "cs-image-compare__divider" }),
+          input({
+            class: "cs-slider__native",
+            id: "image-compare-range",
+            type: "range",
+            min: "0",
+            max: "100",
+            value: "58",
+          })
+        )
+      ),
+      section(
+        { class: "modern-card" },
+        p({ class: "modern-card__kicker" }, "Dock / Spinning Text"),
+        Dock(),
+        div(
+          { class: "cs-spinning-text" },
+          svg({ viewBox: "0 0 120 120", "aria-hidden": "true" },
+            path({ id: "spin-path", d: "M60,60 m-42,0 a42,42 0 1,1 84,0 a42,42 0 1,1 -84,0", fill: "none" }),
+            text(null,
+              van.tags.textPath({ href: "#spin-path", startOffset: "0%" }, "CS16 GRID // TACTICAL UI // ")
+            )
+          )
+        )
+      ),
+      section(
+        { class: "modern-card" },
+        p({ class: "modern-card__kicker" }, "Popover / Blur / Transmission"),
+        div(
+          { class: "modern-card__stack" },
+          button({
+            type: "button",
+            class: "cs-btn cs-magnetic",
+            popovertarget: "quick-actions-popover",
+          }, "Open Popover"),
+          div(
+            { class: "cs-transmission is-indeterminate" },
+            div(
+              { class: "cs-transmission__head" },
+              span(null, "Attachment scan"),
+              span(null, "live")
+            ),
+            div(
+              { class: "cs-progress-bar" },
+              div({ class: "bars" })
+            )
+          )
+        )
+      )
+    )
+  );
+}
+
+function mountApp() {
+  const folderNav = document.getElementById("folder-nav");
+  const messageList = document.getElementById("message-list");
+  const readingPane = document.getElementById("reading-pane");
+  const headerStats = document.getElementById("header-stats");
+  const mobileSwitcher = document.getElementById("mobile-switcher");
+  const dockRoot = document.getElementById("command-dock");
+  const showcaseRoot = document.getElementById("modern-showcase");
+
+  if (folderNav) {
+    folderNav.innerHTML = "";
+    van.add(folderNav, FolderSidebar);
+  }
+
+  if (messageList) {
+    messageList.innerHTML = "";
+    van.add(messageList, InboxLedger);
+  }
+
+  if (readingPane) {
+    readingPane.innerHTML = "";
+    van.add(readingPane, ReaderTabs);
+  }
+
+  if (headerStats) {
+    headerStats.innerHTML = "";
+    van.add(headerStats, HeaderStats);
+  }
+
+  if (mobileSwitcher) {
+    mobileSwitcher.innerHTML = "";
+    van.add(mobileSwitcher, MobileSwitcher);
+  }
+
+  if (dockRoot) {
+    dockRoot.innerHTML = "";
+    van.add(dockRoot, Dock);
+  }
+
+  if (showcaseRoot) {
+    showcaseRoot.innerHTML = "";
+    van.add(showcaseRoot, ModernComponentsPanel);
+  }
+
+  van.derive(() => {
+    const folder = appState.folders.val.find(
+      (entry) => entry.id === appState.selectedFolder.val
+    );
+    const title = document.getElementById("current-folder-title");
+    const count = document.getElementById("message-count");
+    if (title) title.textContent = folder?.name ?? "Mailbox";
+    if (count) count.textContent = `${getVisibleMessages().length} dispatches`;
+  });
+
+  van.derive(() => {
+    const feed = document.getElementById("hud-feed");
+    const counter = document.getElementById("hud-counter");
+    if (feed) {
+      feed.innerHTML = "";
+      appState.hudLogs.val.forEach((line) => {
+        const item = document.createElement("p");
+        item.textContent = line;
+        feed.appendChild(item);
+      });
+    }
+    if (counter) {
+      counter.innerHTML = "";
+      const box = document.createElement("div");
+      box.className = "hud-counter-box";
+      box.innerHTML = `<span class="hud-counter-box__value">${appState.hudCount.val}</span><span class="hud-counter-box__label">PRTY_INFLUX</span>`;
+      counter.appendChild(box);
+    }
+  });
+
+  van.derive(() => {
+    const stat = document.getElementById("transmission-stat");
+    const label = document.getElementById("transmission-label");
+    if (stat) stat.textContent = `${appState.transmissionProgress.val}%`;
+    if (label) label.textContent = appState.transmissionLabel.val;
+  });
+}
+
+function initSplitLayout() {
+  if (splitInstance) {
+    splitInstance.destroy();
+    splitInstance = null;
+  }
+
+  if (window.innerWidth < 1100) return;
+
+  const sidebar = document.getElementById("sidebar-pane");
+  const ledger = document.getElementById("ledger-pane");
+  const reader = document.getElementById("reader-pane-shell");
+  if (!sidebar || !ledger || !reader) return;
+
+  splitInstance = Split([sidebar, ledger, reader], {
+    sizes: [20, 42, 38],
+    minSize: [190, 320, 320],
+    gutterSize: 6,
+    direction: "horizontal",
+  });
+}
+
+function updateScrollProgress() {
+  const scrollable = document.scrollingElement || document.documentElement;
+  const max = scrollable.scrollHeight - window.innerHeight;
+  const percent = max > 0 ? (scrollable.scrollTop / max) * 100 : 0;
+  document.getElementById("scroll-progress-bar")?.style.setProperty("width", `${percent}%`);
+}
+
+function initSearch() {
+  const search = document.getElementById("search-input");
+  search?.addEventListener("input", (event) => {
+    appState.searchQuery.val = event.target.value;
+    ensureSelectedMessage();
+  });
+}
+
+function initDialogs() {
+  document.querySelectorAll("[data-close-dialog]").forEach((buttonEl) => {
+    buttonEl.addEventListener("click", () => closeDialog(buttonEl.dataset.closeDialog));
+  });
+
+  document.querySelectorAll("dialog").forEach((dialog) => {
+    dialog.addEventListener("click", (event) => {
+      const rect = dialog.getBoundingClientRect();
+      const inside =
+        rect.top <= event.clientY &&
+        event.clientY <= rect.top + rect.height &&
+        rect.left <= event.clientX &&
+        event.clientX <= rect.left + rect.width;
+      if (!inside) dialog.close();
+    });
+  });
+}
+
+function initControls() {
+  document.getElementById("new-message-btn")?.addEventListener("click", openComposeDialog);
+  document.getElementById("compose-send")?.addEventListener("click", sendComposeMessage);
+
+  document.querySelectorAll("[data-template]").forEach((buttonEl) => {
+    buttonEl.addEventListener("click", () => insertTemplate(buttonEl.dataset.template));
+  });
+
+  document.querySelectorAll("[data-quick-action]").forEach((buttonEl) => {
+    buttonEl.addEventListener("click", () => applyQuickAction(buttonEl.dataset.quickAction));
+  });
+}
+
+function initKeyboardShortcuts() {
+  Mousetrap.bind("g i", () => setActiveFolder("inbox"));
+  Mousetrap.bind("g p", () => setActiveFolder("priority"));
+  Mousetrap.bind("g s", () => setActiveFolder("sent"));
+  Mousetrap.bind("c", () => openComposeDialog());
+  Mousetrap.bind("/", () => document.getElementById("search-input")?.focus());
+  Mousetrap.bind("j", () => navigateMessages(1));
+  Mousetrap.bind("k", () => navigateMessages(-1));
+  Mousetrap.bind("e", () => {
+    if (appState.selectedMessageId.val) archiveMessage(appState.selectedMessageId.val);
+  });
+}
+
+function initSwipe(pointerDownEvent, messageId) {
+  if (pointerDownEvent.pointerType === "mouse" && window.innerWidth > 820) return;
+  const row = pointerDownEvent.currentTarget;
+  const card = row.querySelector(".cs-inbox-row__card");
+  if (!card) return;
+
+  let startX = pointerDownEvent.clientX;
+  let current = 0;
+  card.setPointerCapture?.(pointerDownEvent.pointerId);
+
+  const onMove = (moveEvent) => {
+    current = Math.max(-148, Math.min(0, moveEvent.clientX - startX));
+    row.style.setProperty("--swipe", `${current}px`);
+  };
+
+  const onEnd = () => {
+    row.removeEventListener("pointermove", onMove);
+    row.removeEventListener("pointerup", onEnd);
+    row.removeEventListener("pointercancel", onEnd);
+
+    if (current < -96) {
+      row.style.setProperty("--swipe", "-148px");
+    } else {
+      row.style.setProperty("--swipe", "0px");
+    }
+  };
+
+  row.addEventListener("pointermove", onMove);
+  row.addEventListener("pointerup", onEnd);
+  row.addEventListener("pointercancel", onEnd);
+}
+
+function initImageCompare() {
+  const compare = document.getElementById("image-compare");
+  const range = document.getElementById("image-compare-range");
+  if (!compare || !range) return;
+  range.addEventListener("input", () => {
+    compare.style.setProperty("--split", `${range.value}%`);
+  });
+}
+
+function initPointerEffects() {
+  const spotlight = document.getElementById("spotlight-card");
+  const tilt = document.getElementById("tilt-card");
+
+  spotlight?.addEventListener("pointermove", (event) => {
+    const rect = spotlight.getBoundingClientRect();
+    spotlight.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+    spotlight.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+  });
+
+  tilt?.addEventListener("pointermove", (event) => {
+    const rect = tilt.getBoundingClientRect();
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 10;
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * -10;
+    tilt.style.setProperty("--ry", `${x.toFixed(2)}deg`);
+    tilt.style.setProperty("--rx", `${y.toFixed(2)}deg`);
+  });
+  tilt?.addEventListener("pointerleave", () => {
+    tilt.style.setProperty("--ry", "0deg");
+    tilt.style.setProperty("--rx", "0deg");
+  });
+
+  document.querySelectorAll(".cs-magnetic").forEach((node) => {
+    node.addEventListener("pointermove", (event) => {
+      cancelAnimationFrame(motionRaf);
+      motionRaf = requestAnimationFrame(() => {
+        const rect = node.getBoundingClientRect();
+        const x = (event.clientX - (rect.left + rect.width / 2)) * 0.12;
+        const y = (event.clientY - (rect.top + rect.height / 2)) * 0.12;
+        node.style.setProperty("--magnetic-x", `${Math.max(-8, Math.min(8, x))}px`);
+        node.style.setProperty("--magnetic-y", `${Math.max(-8, Math.min(8, y))}px`);
+      });
+    });
+    node.addEventListener("pointerleave", () => {
+      node.style.setProperty("--magnetic-x", "0px");
+      node.style.setProperty("--magnetic-y", "0px");
+    });
+  });
+}
+
+function initResponsiveTracking() {
+  const apply = () => {
+    if (window.innerWidth >= 821) {
+      document.body.dataset.mobilePane = "ledger";
+    } else {
+      document.body.dataset.mobilePane = appState.mobilePane.val;
+    }
+    initSplitLayout();
+  };
+
+  window.addEventListener("resize", apply);
+  apply();
+}
+
+function initTelemetryAnimations() {
+  metricsInterval = window.setInterval(() => {
+    appState.sliderDigits.a.val = (appState.sliderDigits.a.val + 1) % 10;
+    appState.sliderDigits.b.val = (appState.sliderDigits.b.val + 3) % 10;
+    appState.sliderDigits.c.val = (appState.sliderDigits.c.val + 2) % 10;
+  }, 1300);
+}
+
+function init() {
+  updateMetrics();
+  ensureSelectedMessage();
+  mountApp();
+  initSearch();
+  initControls();
+  initDialogs();
+  initKeyboardShortcuts();
+  initImageCompare();
+  initPointerEffects();
+  initResponsiveTracking();
+  initTelemetryAnimations();
+
+  window.addEventListener("scroll", updateScrollProgress, { passive: true });
+  updateScrollProgress();
+
+  queueHudLog("Tactical mail grid online.");
+  queueHudLog("Priority watcher synced.", true);
+}
+
+document.addEventListener("DOMContentLoaded", init);
