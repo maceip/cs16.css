@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/css/cs16.min.css" />
     <link rel="stylesheet" href="/src/index.css" />
     <link rel="stylesheet" href="/src/mail-app.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pell@1.0.2/dist/pell.min.css" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <title>cs16 Mail Client</title>
   </head>
@@ -122,7 +123,7 @@
       </form>
     </dialog>
 
-    <!-- Settings Dialog -->
+    <!-- Settings Dialog with Tabs -->
     <dialog class="cs-dialog" id="settings-dialog">
       <form method="dialog">
         <div class="heading">
@@ -134,6 +135,7 @@
         </div>
         <div class="content">
           <div class="cs-tabs">
+            <!-- General Tab -->
             <input class="radiotab" name="settings-tabs" type="radio" id="settings-general" checked="checked" />
             <label class="label" for="settings-general">General</label>
             <div class="panel">
@@ -149,15 +151,21 @@
                 </div>
               </fieldset>
             </div>
+
+            <!-- Accounts Tab -->
             <input class="radiotab" name="settings-tabs" type="radio" id="settings-accounts" />
             <label class="label" for="settings-accounts">Accounts</label>
             <div class="panel">
-              <p>Manage accounts here</p>
+              <p>No accounts configured. Add an account to get started.</p>
+              <button class="cs-btn">+ Add Account</button>
             </div>
+
+            <!-- Filters Tab -->
             <input class="radiotab" name="settings-tabs" type="radio" id="settings-filters" />
             <label class="label" for="settings-filters">Filters</label>
             <div class="panel">
-              <p>Configure filter rules here</p>
+              <p>Configure email filter rules.</p>
+              <button class="cs-btn">+ New Filter</button>
             </div>
           </div>
         </div>
