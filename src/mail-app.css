@@ -11,7 +11,7 @@
 /* Header */
 .app-header {
   background-color: var(--secondary-bg);
-  border-bottom: 2px solid var(--accent);
+  border-bottom: 1px solid var(--border-light);
   padding: 8px;
   flex-shrink: 0;
 }
@@ -41,30 +41,30 @@
   display: flex;
   flex: 1;
   overflow: hidden;
-  gap: 2px;
   background-color: var(--secondary-bg);
-  padding: 2px;
 }
 
 .gutter {
-  background-color: var(--text-3);
+  background-color: var(--border-light);
   cursor: col-resize;
+  flex-shrink: 0;
 }
 
 .gutter.gutter-horizontal {
   cursor: col-resize;
+  width: 4px;
 }
 
 /* Sidebar - Left Pane */
 .sidebar {
-  width: 200px;
   background-color: var(--secondary-bg);
-  border-right: 2px solid var(--accent);
+  border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
   padding: 8px;
   flex-shrink: 0;
+  min-width: 150px;
 }
 
 .sidebar-header {
@@ -73,10 +73,10 @@
 
 .sidebar-header h3 {
   margin: 0;
-  color: var(--accent);
+  color: var(--text);
   font-size: 12px;
   letter-spacing: 1px;
-  border-bottom: 1px solid var(--accent);
+  border-bottom: 1px solid var(--border-dark);
   padding-bottom: 4px;
 }
 
@@ -135,18 +135,19 @@
 .sidebar-footer {
   margin-top: 12px;
   padding-top: 8px;
-  border-top: 1px solid var(--accent);
+  border-top: 1px solid var(--border-dark);
 }
 
 /* Message List Pane - Middle */
 .message-list-pane {
   flex: 1;
   background-color: var(--secondary-bg);
-  border-right: 2px solid var(--accent);
+  border-right: 1px solid var(--border-light);
   display: flex;
   flex-direction: column;
   padding: 8px;
   overflow: hidden;
+  min-width: 200px;
 }
 
 .list-header {
@@ -155,7 +156,7 @@
 
 .list-header h3 {
   margin: 0 0 8px 0;
-  color: var(--accent);
+  color: var(--text);
   font-size: 14px;
   letter-spacing: 1px;
 }
@@ -240,20 +241,20 @@
 
 /* Reading Pane - Right */
 .reading-pane {
-  width: 300px;
   background-color: var(--secondary-bg);
   display: flex;
   flex-direction: column;
   padding: 8px;
   overflow: hidden;
   flex-shrink: 0;
+  min-width: 200px;
 }
 
 .reading-pane-content {
   flex: 1;
   overflow-y: auto;
   background-color: var(--bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-light);
   padding: 8px;
 }
 
@@ -301,7 +302,7 @@
   gap: 4px;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid var(--accent);
+  border-top: 1px solid var(--border-dark);
 }
 
 .reading-pane-actions .cs-btn {
@@ -331,18 +332,19 @@
 .field-group input {
   background-color: var(--bg);
   color: var(--text);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-light);
   padding: 4px 6px;
 }
 
 .field-group input:focus {
   outline: none;
-  background-color: var(--border-dark);
+  background-color: var(--secondary-bg);
+  border-color: var(--accent);
 }
 
 #compose-editor {
   background-color: var(--bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-light);
   min-height: 200px;
   padding: 6px;
   color: var(--text);
@@ -350,14 +352,14 @@
 
 /* Pell Editor Styling */
 .pell {
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-light);
   background-color: var(--bg);
 }
 
 .pell-button {
   background-color: var(--bg);
-  color: var(--accent);
-  border: 1px solid var(--accent);
+  color: var(--text);
+  border: 1px solid var(--border-light);
   padding: 4px 8px;
   margin: 2px;
   cursor: pointer;
@@ -367,6 +369,7 @@
 
 .pell-button:hover {
   background-color: var(--border-dark);
+  color: var(--accent);
 }
 
 .pell-button.active {
@@ -388,13 +391,14 @@
 }
 
 .pell-content:focus {
-  outline: 1px solid var(--accent);
+  outline: none;
+  border: 1px solid var(--accent);
 }
 
 /* TreeSelect Styling */
 .treeselect {
   background-color: var(--bg);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-light);
   color: var(--text);
 }
 
@@ -404,14 +408,14 @@
 
 .treeselect-search {
   background-color: var(--bg);
-  border-bottom: 1px solid var(--accent);
+  border-bottom: 1px solid var(--border-dark);
   padding: 4px;
 }
 
 .treeselect-search input {
   background-color: var(--secondary-bg);
   color: var(--text);
-  border: 1px solid var(--accent);
+  border: 1px solid var(--border-light);
   padding: 4px;
 }
 
@@ -455,7 +459,7 @@
   right: 0;
   padding: 8px;
   background-color: var(--secondary-bg);
-  border-top: 2px solid var(--accent);
+  border-top: 1px solid var(--border-light);
   z-index: 1000;
 }
 
@@ -486,16 +490,6 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1200px) {
-  .sidebar {
-    width: 150px;
-  }
-
-  .reading-pane {
-    width: 250px;
-  }
-}
-
 @media (max-width: 900px) {
   .reading-pane {
     display: none;
