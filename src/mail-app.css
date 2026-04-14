@@ -585,17 +585,20 @@
 
 /* Tab improvements */
 .cs-tabs {
-  display: flex;
-  flex-direction: column;
+  width: 100%;
 }
 
+/* Hide radio button inputs */
 .cs-tabs input.radiotab {
   display: none;
 }
 
+/* Tab labels - display inline horizontally */
 .cs-tabs label.label {
+  display: inline-block;
   padding: 8px 12px;
   background-color: var(--bg);
+  border: 1px solid var(--border-light);
   border-bottom: 2px solid var(--border-light);
   cursor: pointer;
   transition: all 0.1s;
@@ -603,24 +606,39 @@
   font-size: 11px;
   font-weight: bold;
   color: var(--text);
+  margin: 0;
+  user-select: none;
+  width: calc(33.333% - 2px);
+  box-sizing: border-box;
+  text-align: center;
 }
 
 .cs-tabs label.label:hover {
   background-color: var(--border-dark);
-}
-
-.cs-tabs input.radiotab:checked + label.label {
-  background-color: var(--secondary-bg);
-  border-bottom-color: var(--accent);
   color: var(--accent);
 }
 
-.cs-tabs .panel {
-  display: none;
-  padding: 12px;
-  background-color: var(--bg);
+/* Active tab label */
+.cs-tabs input.radiotab:checked + label.label {
+  background-color: var(--secondary-bg);
+  border-bottom: 3px solid var(--accent);
+  color: var(--accent);
+  font-weight: bold;
 }
 
+/* Tab panel - hidden by default, display as block */
+.cs-tabs .panel {
+  display: none;
+  width: 100%;
+  padding: 16px;
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  border-top: none;
+  box-sizing: border-box;
+  clear: both;
+}
+
+/* Show active tab panel - adjacent selector from checked radio */
 .cs-tabs input.radiotab:checked + label.label + .panel {
   display: block;
 }
