@@ -9,7 +9,6 @@ body.mail-app {
 .mail-app {
   --mail-shell-width: min(1700px, calc(100vw - 32px));
   --mail-gap: 12px;
-  --cs-phosphor: #78ff5d;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
@@ -56,7 +55,6 @@ body.mail-app {
   font-size: clamp(28px, 5vw, 48px);
   line-height: 0.9;
   letter-spacing: 1px;
-  text-shadow: 0 0 18px rgba(120, 255, 93, 0.12);
 }
 
 .title-subcopy {
@@ -408,7 +406,7 @@ body.mail-app {
 }
 
 .tilt-panel__stamp {
-  color: var(--cs-phosphor);
+  color: var(--accent);
   text-transform: uppercase;
   font-size: 12px;
   line-height: 12px;
@@ -465,7 +463,7 @@ body.mail-app {
 }
 
 .compose-discard {
-  color: #f5d9d9;
+  color: var(--secondary-text);
 }
 
 .sidebar-separator {
@@ -563,7 +561,7 @@ body.mail-app {
 }
 
 .hud-counter-box__value {
-  color: var(--cs-phosphor);
+  color: var(--accent);
   font-size: 26px;
   line-height: 22px;
   text-align: right;
@@ -584,7 +582,7 @@ body.mail-app {
 }
 
 .mobile-switcher__btn.is-active {
-  color: var(--cs-phosphor);
+  color: var(--accent);
 }
 
 .quick-actions-popover {
@@ -651,14 +649,14 @@ body.mail-app {
 }
 
 .mobile-pane-toggle .cs-btn[data-active="true"] {
-  color: var(--cs-phosphor);
+  color: var(--accent);
 }
 
-.mail-app .cs-hud-overlay__feed .feed-line {
+.mail-app .cs-hud-overlay__feed p {
   padding: 4px 6px 3px;
   background-color: rgba(0, 0, 0, 0.48);
-  border: 1px solid rgba(120, 255, 93, 0.22);
-  color: var(--cs-phosphor);
+  border: 1px solid var(--border-dark);
+  color: var(--accent);
   text-transform: uppercase;
   font-size: 11px;
   line-height: 11px;
@@ -669,7 +667,7 @@ body.mail-app {
 }
 
 .mail-app [data-priority="true"] {
-  --status: var(--cs-phosphor);
+  --status: var(--accent);
 }
 
 @media (max-width: 479px) {

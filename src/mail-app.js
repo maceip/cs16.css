@@ -31,15 +31,15 @@ const {
 const now = Date.now();
 
 const folderDefinitions = [
-  { id: "inbox", name: "Inbox", type: "system", status: "#78ff5d" },
-  { id: "priority", name: "Priority", type: "system", status: "#c4b550" },
-  { id: "sent", name: "Sent", type: "system", status: "#9fb2ff" },
-  { id: "drafts", name: "Drafts", type: "system", status: "#d8ded3" },
-  { id: "archives", name: "Archives", type: "system", status: "#7f8c7f" },
-  { id: "trash", name: "Trash", type: "system", status: "#c3876c" },
-  { id: "ops", name: "Ops", type: "tag", status: "#78ff5d" },
-  { id: "supply", name: "Supply", type: "tag", status: "#d1b96e" },
-  { id: "intel", name: "Intel", type: "tag", status: "#93d7ff" },
+  { id: "inbox", name: "Inbox", type: "system", status: "var(--accent)" },
+  { id: "priority", name: "Priority", type: "system", status: "var(--secondary-accent)" },
+  { id: "sent", name: "Sent", type: "system", status: "var(--border-light)" },
+  { id: "drafts", name: "Drafts", type: "system", status: "var(--secondary-text)" },
+  { id: "archives", name: "Archives", type: "system", status: "var(--text-3)" },
+  { id: "trash", name: "Trash", type: "system", status: "var(--border-dark)" },
+  { id: "ops", name: "Ops", type: "tag", status: "var(--accent)" },
+  { id: "supply", name: "Supply", type: "tag", status: "var(--secondary-accent)" },
+  { id: "intel", name: "Intel", type: "tag", status: "var(--border-light)" },
 ];
 
 function createMessage({
@@ -812,7 +812,7 @@ function ReaderTabs() {
 
 function AnimatedStat(labelText, valueState) {
   return div(
-    { class: "cs-animated-number cs-glow" },
+    { class: "cs-animated-number" },
     span({ class: "cs-animated-number__label" }, labelText),
     span({ class: "cs-animated-number__value" }, () => `${valueState.val}`)
   );
