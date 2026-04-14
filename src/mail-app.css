@@ -1,16 +1,17 @@
-/* Mail App Layout */
+/* Mail App Layout - Uses cs16.css color variables */
+
 .mail-app {
   display: flex;
   flex-direction: column;
   height: 100vh;
   overflow: hidden;
-  background-color: #000000;
+  background-color: var(--bg);
 }
 
 /* Header */
 .app-header {
-  background-color: #1f1f1f;
-  border-bottom: 2px solid #00ff00;
+  background-color: var(--secondary-bg);
+  border-bottom: 2px solid var(--accent);
   padding: 8px;
   flex-shrink: 0;
 }
@@ -25,7 +26,7 @@
 .app-title {
   margin: 0;
   font-size: 18px;
-  color: #00ff00;
+  color: var(--accent);
   font-weight: bold;
   letter-spacing: 2px;
 }
@@ -41,12 +42,12 @@
   flex: 1;
   overflow: hidden;
   gap: 2px;
-  background-color: #1f1f1f;
+  background-color: var(--secondary-bg);
   padding: 2px;
 }
 
 .gutter {
-  background-color: #c0c0c0;
+  background-color: var(--text-3);
   cursor: col-resize;
 }
 
@@ -57,8 +58,8 @@
 /* Sidebar - Left Pane */
 .sidebar {
   width: 200px;
-  background-color: #1f1f1f;
-  border-right: 2px solid #00ff00;
+  background-color: var(--secondary-bg);
+  border-right: 2px solid var(--accent);
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -72,10 +73,10 @@
 
 .sidebar-header h3 {
   margin: 0;
-  color: #00ff00;
+  color: var(--accent);
   font-size: 12px;
   letter-spacing: 1px;
-  border-bottom: 1px solid #00ff00;
+  border-bottom: 1px solid var(--accent);
   padding-bottom: 4px;
 }
 
@@ -92,21 +93,21 @@
   align-items: center;
   padding: 6px 4px;
   margin: 2px 0;
-  background-color: #2a2a2a;
-  border: 1px solid #1f1f1f;
+  background-color: var(--bg);
+  border: 1px solid var(--secondary-bg);
   cursor: pointer;
   transition: all 0.1s;
 }
 
 .folder-item:hover {
-  background-color: #404040;
-  color: #00ff00;
+  background-color: var(--border-dark);
+  color: var(--accent);
 }
 
 .folder-item.active {
-  background-color: #00ff00;
-  color: #000000;
-  border: 1px solid #00ff00;
+  background-color: var(--accent);
+  color: var(--outline);
+  border: 1px solid var(--accent);
 }
 
 .folder-item-name {
@@ -116,8 +117,8 @@
 }
 
 .folder-item-count {
-  background-color: #00ff00;
-  color: #000000;
+  background-color: var(--accent);
+  color: var(--outline);
   padding: 2px 6px;
   margin-left: 4px;
   font-size: 10px;
@@ -127,21 +128,21 @@
 }
 
 .folder-item.active .folder-item-count {
-  background-color: #000000;
-  color: #00ff00;
+  background-color: var(--outline);
+  color: var(--accent);
 }
 
 .sidebar-footer {
   margin-top: 12px;
   padding-top: 8px;
-  border-top: 1px solid #00ff00;
+  border-top: 1px solid var(--accent);
 }
 
 /* Message List Pane - Middle */
 .message-list-pane {
   flex: 1;
-  background-color: #1f1f1f;
-  border-right: 2px solid #00ff00;
+  background-color: var(--secondary-bg);
+  border-right: 2px solid var(--accent);
   display: flex;
   flex-direction: column;
   padding: 8px;
@@ -154,7 +155,7 @@
 
 .list-header h3 {
   margin: 0 0 8px 0;
-  color: #00ff00;
+  color: var(--accent);
   font-size: 14px;
   letter-spacing: 1px;
 }
@@ -172,37 +173,37 @@
 .message-list {
   flex: 1;
   overflow-y: auto;
-  background-color: #1f1f1f;
+  background-color: var(--secondary-bg);
 }
 
 .message-row {
   display: flex;
   align-items: center;
   padding: 8px 6px;
-  border-bottom: 1px solid #2a2a2a;
+  border-bottom: 1px solid var(--border-dark);
   cursor: pointer;
   transition: all 0.1s;
-  background-color: #1f1f1f;
+  background-color: var(--secondary-bg);
 }
 
 .message-row:hover {
-  background-color: #404040;
+  background-color: var(--border-dark);
 }
 
 .message-row.unread {
   font-weight: bold;
-  background-color: #2a2a2a;
+  background-color: var(--bg);
 }
 
 .message-row.selected {
-  background-color: #00ff00;
-  color: #000000;
+  background-color: var(--accent);
+  color: var(--outline);
 }
 
 .message-row.selected .message-sender,
 .message-row.selected .message-subject,
 .message-row.selected .message-time {
-  color: #000000;
+  color: var(--outline);
 }
 
 .message-row-checkbox {
@@ -216,14 +217,14 @@
 
 .message-sender {
   font-size: 12px;
-  color: #00ff00;
+  color: var(--accent);
   font-weight: bold;
   text-transform: uppercase;
 }
 
 .message-subject {
   font-size: 11px;
-  color: #c0c0c0;
+  color: var(--text);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -232,7 +233,7 @@
 
 .message-time {
   font-size: 10px;
-  color: #808080;
+  color: var(--text-3);
   margin-left: 8px;
   white-space: nowrap;
 }
@@ -240,7 +241,7 @@
 /* Reading Pane - Right */
 .reading-pane {
   width: 300px;
-  background-color: #1f1f1f;
+  background-color: var(--secondary-bg);
   display: flex;
   flex-direction: column;
   padding: 8px;
@@ -251,8 +252,8 @@
 .reading-pane-content {
   flex: 1;
   overflow-y: auto;
-  background-color: #2a2a2a;
-  border: 1px solid #00ff00;
+  background-color: var(--bg);
+  border: 1px solid var(--accent);
   padding: 8px;
 }
 
@@ -261,7 +262,7 @@
   align-items: center;
   justify-content: center;
   height: 100%;
-  color: #808080;
+  color: var(--text-3);
   text-align: center;
 }
 
@@ -276,20 +277,20 @@
 }
 
 .metadata-label {
-  color: #00ff00;
+  color: var(--accent);
   font-weight: bold;
   min-width: 60px;
 }
 
 .metadata-value {
-  color: #c0c0c0;
+  color: var(--text);
   flex: 1;
   word-break: break-all;
 }
 
 .message-body {
   font-size: 12px;
-  color: #c0c0c0;
+  color: var(--text);
   line-height: 1.4;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -300,7 +301,7 @@
   gap: 4px;
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid #00ff00;
+  border-top: 1px solid var(--accent);
 }
 
 .reading-pane-actions .cs-btn {
@@ -322,41 +323,41 @@
 }
 
 .field-group label {
-  color: #00ff00;
+  color: var(--accent);
   font-size: 11px;
   font-weight: bold;
 }
 
 .field-group input {
-  background-color: #2a2a2a;
-  color: #c0c0c0;
-  border: 1px solid #00ff00;
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--accent);
   padding: 4px 6px;
 }
 
 .field-group input:focus {
   outline: none;
-  background-color: #3a3a3a;
+  background-color: var(--border-dark);
 }
 
 #compose-editor {
-  background-color: #2a2a2a;
-  border: 1px solid #00ff00;
+  background-color: var(--bg);
+  border: 1px solid var(--accent);
   min-height: 200px;
   padding: 6px;
-  color: #c0c0c0;
+  color: var(--text);
 }
 
 /* Pell Editor Styling */
 .pell {
-  border: 1px solid #00ff00;
-  background-color: #2a2a2a;
+  border: 1px solid var(--accent);
+  background-color: var(--bg);
 }
 
 .pell-button {
-  background-color: #2a2a2a;
-  color: #00ff00;
-  border: 1px solid #00ff00;
+  background-color: var(--bg);
+  color: var(--accent);
+  border: 1px solid var(--accent);
   padding: 4px 8px;
   margin: 2px;
   cursor: pointer;
@@ -365,12 +366,12 @@
 }
 
 .pell-button:hover {
-  background-color: #404040;
+  background-color: var(--border-dark);
 }
 
 .pell-button.active {
-  background-color: #00ff00;
-  color: #000000;
+  background-color: var(--accent);
+  color: var(--outline);
 }
 
 .pell-button:disabled {
@@ -379,15 +380,71 @@
 }
 
 .pell-content {
-  background-color: #2a2a2a;
-  color: #c0c0c0;
+  background-color: var(--bg);
+  color: var(--text);
   padding: 6px;
   min-height: 150px;
   outline: none;
 }
 
 .pell-content:focus {
-  outline: 1px solid #00ff00;
+  outline: 1px solid var(--accent);
+}
+
+/* TreeSelect Styling */
+.treeselect {
+  background-color: var(--bg);
+  border: 1px solid var(--accent);
+  color: var(--text);
+}
+
+.treeselect-placeholder {
+  color: var(--text-3);
+}
+
+.treeselect-search {
+  background-color: var(--bg);
+  border-bottom: 1px solid var(--accent);
+  padding: 4px;
+}
+
+.treeselect-search input {
+  background-color: var(--secondary-bg);
+  color: var(--text);
+  border: 1px solid var(--accent);
+  padding: 4px;
+}
+
+.treeselect-options {
+  background-color: var(--bg);
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.treeselect-option {
+  padding: 4px 8px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.treeselect-option:hover {
+  background-color: var(--border-dark);
+  color: var(--accent);
+}
+
+.treeselect-option.selected {
+  background-color: var(--accent);
+  color: var(--outline);
+}
+
+.treeselect-option.disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+.treeselect-option-nest {
+  margin-left: 12px;
 }
 
 /* Transmission Progress */
@@ -397,8 +454,8 @@
   left: 0;
   right: 0;
   padding: 8px;
-  background-color: #1f1f1f;
-  border-top: 2px solid #00ff00;
+  background-color: var(--secondary-bg);
+  border-top: 2px solid var(--accent);
   z-index: 1000;
 }
 
@@ -412,20 +469,20 @@
 .message-list::-webkit-scrollbar-track,
 .reading-pane-content::-webkit-scrollbar-track,
 .sidebar::-webkit-scrollbar-track {
-  background-color: #1f1f1f;
+  background-color: var(--secondary-bg);
 }
 
 .message-list::-webkit-scrollbar-thumb,
 .reading-pane-content::-webkit-scrollbar-thumb,
 .sidebar::-webkit-scrollbar-thumb {
-  background-color: #404040;
-  border: 2px solid #1f1f1f;
+  background-color: var(--border-dark);
+  border: 2px solid var(--secondary-bg);
 }
 
 .message-list::-webkit-scrollbar-thumb:hover,
 .reading-pane-content::-webkit-scrollbar-thumb:hover,
 .sidebar::-webkit-scrollbar-thumb:hover {
-  background-color: #00ff00;
+  background-color: var(--accent);
 }
 
 /* Responsive adjustments */
@@ -437,62 +494,6 @@
   .reading-pane {
     width: 250px;
   }
-}
-
-/* TreeSelect Styling */
-.treeselect {
-  background-color: #2a2a2a;
-  border: 1px solid #00ff00;
-  color: #c0c0c0;
-}
-
-.treeselect-placeholder {
-  color: #808080;
-}
-
-.treeselect-search {
-  background-color: #2a2a2a;
-  border-bottom: 1px solid #00ff00;
-  padding: 4px;
-}
-
-.treeselect-search input {
-  background-color: #1f1f1f;
-  color: #c0c0c0;
-  border: 1px solid #00ff00;
-  padding: 4px;
-}
-
-.treeselect-options {
-  background-color: #2a2a2a;
-  max-height: 300px;
-  overflow-y: auto;
-}
-
-.treeselect-option {
-  padding: 4px 8px;
-  color: #c0c0c0;
-  cursor: pointer;
-  transition: all 0.1s;
-}
-
-.treeselect-option:hover {
-  background-color: #404040;
-  color: #00ff00;
-}
-
-.treeselect-option.selected {
-  background-color: #00ff00;
-  color: #000000;
-}
-
-.treeselect-option.disabled {
-  color: #808080;
-  cursor: not-allowed;
-}
-
-.treeselect-option-nest {
-  margin-left: 12px;
 }
 
 @media (max-width: 900px) {
