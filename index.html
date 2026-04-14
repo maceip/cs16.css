@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="/src/index.css" />
     <link rel="stylesheet" href="/src/mail-app.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pell@1.0.2/dist/pell.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pikaday/css/pikaday.css" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <title>cs16 Mail Client</title>
   </head>
@@ -120,6 +121,36 @@
         <menu class="footer-btns">
           <button type="button" class="cs-btn">Move</button>
           <button type="button" class="cs-btn" onclick="this.closest('dialog').close()">Cancel</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <!-- Date Filter Dialog (Pikaday) -->
+    <dialog class="cs-dialog" id="date-filter-dialog">
+      <form method="dialog">
+        <div class="heading">
+          <div class="wrapper">
+            <div class="icon"></div>
+            <p class="text">Filter by Date Range</p>
+          </div>
+          <button class="cs-btn close"></button>
+        </div>
+        <div class="content">
+          <div class="compose-fields">
+            <div class="field-group">
+              <label class="cs-input__label" for="date-filter-start">Start Date:</label>
+              <input type="text" class="cs-input" id="date-filter-start" placeholder="YYYY-MM-DD" />
+            </div>
+            <div class="field-group">
+              <label class="cs-input__label" for="date-filter-end">End Date:</label>
+              <input type="text" class="cs-input" id="date-filter-end" placeholder="YYYY-MM-DD" />
+            </div>
+          </div>
+        </div>
+        <menu class="footer-btns">
+          <button type="button" class="cs-btn" id="apply-date-filter">Apply Filter</button>
+          <button type="button" class="cs-btn" id="clear-date-filter">Clear</button>
+          <button type="button" class="cs-btn" onclick="this.closest('dialog').close()">Close</button>
         </menu>
       </form>
     </dialog>

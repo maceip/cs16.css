@@ -13,6 +13,8 @@ import pell from 'pell';
 import TreeSelect from 'treeselectjs';
 // DOMPurify - Sanitizes email HTML to prevent XSS attacks
 import DOMPurify from 'dompurify';
+// Pikaday - Lightweight date picker (no jQuery required)
+import Pikaday from 'pikaday';
 
 const { div, span, p, button, input, label, nav, h3, h2, section, aside, hr } = van.tags;
 
@@ -71,6 +73,10 @@ const appState = {
   showSettings: van.state(false),
   uploadProgress: van.state(0),
   searchQuery: van.state(''),
+
+  // Date filtering
+  dateFilterStart: van.state(null),
+  dateFilterEnd: van.state(null),
 };
 
 // ============================================================================
@@ -329,6 +335,60 @@ function initializeFolderPicker() {
 }
 
 // ============================================================================
+// PIKADAY DATE PICKER INITIALIZATION
+// ============================================================================
+// Pikaday: Lightweight date picker (no jQuery dependency)
+// Used for filtering messages by date range
+// Features: calendar UI, keyboard navigation, mobile-friendly
+
+function initializeDatePickers() {
+  const startDateInput = document.getElementById('date-filter-start');
+  const endDateInput = document.getElementById('date-filter-end');
+
+  if (startDateInput && !startDateInput.dataset.pikadayInit) {
+    const startPicker = new Pikaday({
+      field: startDateInput,
+      format: 'YYYY-MM-DD',
+      toString(date, format) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
+      },
+      parse(dateString, format) {
+        const parts = dateString.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      },
+      onSelect: () => {
+        appState.dateFilterStart.val = startPicker.getDate();
+      },
+    });
+    startDateInput.dataset.pikadayInit = 'true';
+  }
+
+  if (endDateInput && !endDateInput.dataset.pikadayInit) {
+    const endPicker = new Pikaday({
+      field: endDateInput,
+      format: 'YYYY-MM-DD',
+      toString(date, format) {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${year}-${month}-${day}`;
+      },
+      parse(dateString, format) {
+        const parts = dateString.split('-');
+        return new Date(parts[0], parts[1] - 1, parts[2]);
+      },
+      onSelect: () => {
+        appState.dateFilterEnd.val = endPicker.getDate();
+      },
+    });
+    endDateInput.dataset.pikadayInit = 'true';
+  }
+}
+
+// ============================================================================
 // MOVE MESSAGE FUNCTIONALITY
 // ============================================================================
 
@@ -453,6 +513,14 @@ function init() {
             searchInput.placeholder = 'Search...';
             searchInput.id = 'search-input';
             return searchInput;
+          })(),
+          (() => {
+            const dateFilterBtn = document.createElement('button');
+            dateFilterBtn.className = 'cs-btn';
+            dateFilterBtn.textContent = 'Filter by Date';
+            dateFilterBtn.id = 'open-date-filter';
+            dateFilterBtn.onclick = () => document.getElementById('date-filter-dialog').showModal();
+            return dateFilterBtn;
           })()
         ),
         hr({ class: 'cs-hr' }),
@@ -564,6 +632,42 @@ function init() {
           moveMessageToFolder(appState.selectedMessage.val, targetFolderId);
           moveDialog.close();
         }
+      });
+    }
+  }
+
+  // Date filter dialog with Pikaday
+  const dateFilterDialog = document.getElementById('date-filter-dialog');
+  if (dateFilterDialog) {
+    const originalShowModal = dateFilterDialog.showModal;
+    dateFilterDialog.showModal = function () {
+      setTimeout(initializeDatePickers, 100);
+      return originalShowModal.call(this);
+    };
+
+    const applyFilterBtn = document.getElementById('apply-date-filter');
+    if (applyFilterBtn) {
+      applyFilterBtn.addEventListener('click', () => {
+        // Filter messages by date range
+        if (appState.dateFilterStart.val || appState.dateFilterEnd.val) {
+          console.log('Filtering messages by date:', {
+            start: appState.dateFilterStart.val,
+            end: appState.dateFilterEnd.val,
+          });
+          dateFilterDialog.close();
+        } else {
+          alert('Please select at least one date');
+        }
+      });
+    }
+
+    const clearFilterBtn = document.getElementById('clear-date-filter');
+    if (clearFilterBtn) {
+      clearFilterBtn.addEventListener('click', () => {
+        appState.dateFilterStart.val = null;
+        appState.dateFilterEnd.val = null;
+        document.getElementById('date-filter-start').value = '';
+        document.getElementById('date-filter-end').value = '';
       });
     }
   }

@@ -675,6 +675,105 @@
   font-size: 12px;
 }
 
+/* Pikaday Date Picker Styling */
+.pika-single {
+  background-color: var(--bg);
+  border: 1px solid var(--border-light);
+  border-radius: 0;
+  font-family: ArialPixel, system-ui, sans-serif;
+}
+
+.pika-title {
+  background-color: var(--secondary-bg);
+  color: var(--text);
+  border-bottom: 1px solid var(--border-light);
+  padding: 6px;
+  font-size: 11px;
+}
+
+.pika-label {
+  color: var(--text);
+  font-size: 11px;
+  font-weight: bold;
+}
+
+.pika-next,
+.pika-prev {
+  color: var(--accent);
+  cursor: pointer;
+  user-select: none;
+}
+
+.pika-next:hover,
+.pika-prev:hover {
+  color: var(--text);
+}
+
+.pika-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.pika-table th {
+  color: var(--text-3);
+  background-color: var(--secondary-bg);
+  padding: 4px;
+  font-size: 10px;
+  font-weight: bold;
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.pika-table td {
+  padding: 2px;
+  text-align: center;
+  font-size: 11px;
+}
+
+.pika-table button {
+  width: 100%;
+  padding: 4px;
+  background-color: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border-dark);
+  cursor: pointer;
+  font-family: ArialPixel, system-ui, sans-serif;
+  font-size: 10px;
+  transition: all 0.1s;
+}
+
+.pika-table button:hover {
+  background-color: var(--border-dark);
+  color: var(--accent);
+}
+
+.pika-table button.is-selected {
+  background-color: var(--accent);
+  color: var(--outline);
+  border: 1px solid var(--accent);
+  font-weight: bold;
+}
+
+.pika-table button.is-today {
+  font-weight: bold;
+  border: 1px solid var(--accent);
+}
+
+.pika-table button.is-disabled {
+  color: var(--text-3);
+  cursor: not-allowed;
+}
+
+.pika-table button.is-inrange {
+  background-color: var(--secondary-bg);
+  color: var(--text);
+}
+
+/* Date filter toolbar button */
+.list-toolbar .cs-btn {
+  white-space: nowrap;
+}
+
 /* Responsive adjustments */
 @media (max-width: 900px) {
   .reading-pane {
