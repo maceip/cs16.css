@@ -28,6 +28,52 @@ body.mail-app {
   gap: 8px;
 }
 
+.showcase-intro {
+  display: grid;
+  gap: 8px;
+  padding: 8px;
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  background-color: var(--bg);
+}
+
+.showcase-intro__copy {
+  color: var(--secondary-text);
+  max-width: 68ch;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.showcase-overview {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.showcase-overview__item {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  background-color: var(--secondary-bg);
+}
+
+.showcase-overview__label {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 11px;
+  text-transform: uppercase;
+}
+
+.showcase-overview__value {
+  color: white;
+  font-size: 15px;
+  line-height: 14px;
+}
+
 .app-header-top {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto auto;
@@ -602,6 +648,39 @@ body.mail-app {
   display: grid;
 }
 
+.component-index {
+  display: grid;
+  gap: 8px;
+}
+
+.component-index__list {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+}
+
+.component-index__item {
+  display: grid;
+  gap: 3px;
+  padding: 8px;
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  background-color: var(--bg);
+}
+
+.component-index__item strong {
+  color: white;
+  font-size: 13px;
+  line-height: 12px;
+}
+
+.component-index__item span {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 11px;
+}
+
 .modern-panel {
   display: grid;
   gap: 8px;
@@ -782,7 +861,9 @@ body.mail-app {
   .compose-grid,
   .component-grid,
   .modern-grid,
-  .tilt-grid {
+  .tilt-grid,
+  .showcase-overview,
+  .component-index__list {
     grid-template-columns: 1fr;
   }
 
@@ -833,7 +914,9 @@ body.mail-app {
   .app-header-top,
   .app-header-bottom,
   .component-grid,
-  .modern-grid {
+  .modern-grid,
+  .showcase-overview,
+  .component-index__list {
     grid-template-columns: 1fr;
   }
 

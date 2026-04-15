@@ -26,7 +26,7 @@
       <a class="vx-rail-link" href="#command-dock-shell">Dock</a>
     </nav>
 
-    <header class="app-header">
+    <header class="app-header" id="overview">
       <div class="app-header-top">
         <div class="title-cluster">
           <p class="title-kicker">CSS 1.6 TACTICAL INTERFACE</p>
@@ -71,6 +71,7 @@
 
       <div class="app-status-strip">
         <span class="app-status-strip__label">STATUS:</span>
+        <span class="app-status-strip__item">COMPONENT SHOWCASE</span>
         <span class="app-status-strip__item">MOBILE READY</span>
         <span class="app-status-strip__item">FOLDABLE READY</span>
         <span class="app-status-strip__item">DESKTOP READY</span>
@@ -79,6 +80,49 @@
     </header>
 
     <main class="app-shell">
+      <section class="pane-shell showcase-summary" id="component-overview">
+        <div class="pane-heading">
+          <p class="pane-kicker">Component Overview</p>
+          <h2>Library + Demo Surface</h2>
+        </div>
+        <hr class="cs-hr" />
+        <div class="showcase-summary__grid">
+          <fieldset class="cs-fieldset">
+            <legend>Core UI</legend>
+            <div class="showcase-summary__list">
+              <p>Buttons</p>
+              <p>Inputs / Textarea</p>
+              <p>Checkboxes</p>
+              <p>Tabs</p>
+              <p>Dialogs</p>
+              <p>Progress Bars</p>
+            </div>
+          </fieldset>
+          <fieldset class="cs-fieldset">
+            <legend>Mail Shell</legend>
+            <div class="showcase-summary__list">
+              <p>Tactical Sidebar</p>
+              <p>Inbox Ledger</p>
+              <p>Reading Pane</p>
+              <p>Compose Console</p>
+              <p>HUD Overlay</p>
+              <p>Transmission Progress</p>
+            </div>
+          </fieldset>
+          <fieldset class="cs-fieldset">
+            <legend>Modern Extensions</legend>
+            <div class="showcase-summary__list">
+              <p>Animated Number</p>
+              <p>Sliding Number</p>
+              <p>Dock</p>
+              <p>Image Compare</p>
+              <p>Spotlight / Tilt / Magnetic</p>
+              <p>Text Shuffle</p>
+            </div>
+          </fieldset>
+        </div>
+      </section>
+
       <div class="app-container" id="app-container">
         <aside class="sidebar pane-shell" id="sidebar-pane">
           <div class="pane-heading pane-heading--row">
@@ -119,6 +163,36 @@
           <div id="reading-pane" class="reading-pane-content" tabindex="0"></div>
         </section>
       </div>
+
+      <section class="pane-shell showcase-dialogs" id="dialog-showcase">
+        <div class="pane-heading pane-heading--row">
+          <div>
+            <p class="pane-kicker">Dialogs + Popovers</p>
+            <h2>Interactive Overlays</h2>
+          </div>
+          <p class="pane-meta">Native dialog / popover mounts</p>
+        </div>
+        <hr class="cs-hr" />
+        <div class="showcase-dialogs__actions">
+          <button class="cs-btn" id="compose-preview-btn" type="button">Open Compose</button>
+          <button
+            class="cs-btn"
+            id="quick-actions-preview"
+            type="button"
+            popovertarget="quick-actions-popover"
+          >
+            Open Quick Actions
+          </button>
+          <button
+            class="cs-btn"
+            id="template-preview"
+            type="button"
+            popovertarget="compose-template-popover"
+          >
+            Open Templates
+          </button>
+        </div>
+      </section>
 
       <section class="modern-showcase" id="modern-showcase"></section>
     </main>
