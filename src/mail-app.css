@@ -98,6 +98,16 @@ body.mail-app {
   display: none;
 }
 
+.sidebar-toggle-shell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.sidebar-toggle-shell .cs-btn {
+  min-width: 82px;
+}
+
 .app-status-strip {
   display: flex;
   flex-wrap: wrap;
@@ -178,6 +188,77 @@ body.mail-app {
   flex: 0 0 260px;
   max-width: 320px;
   gap: 8px;
+  transition: flex-basis 0.16s ease, max-width 0.16s ease, min-width 0.16s ease;
+}
+
+.sidebar--collapsed {
+  flex-basis: 56px;
+  min-width: 56px;
+  max-width: 56px;
+}
+
+.sidebar--collapsed .pane-heading h2,
+.sidebar--collapsed .pane-kicker,
+.sidebar--collapsed .cs-sidebar__label,
+.sidebar--collapsed .cs-sidebar__name,
+.sidebar--collapsed .cs-sidebar__count,
+.sidebar--collapsed .sidebar-separator,
+.sidebar--collapsed .cs-hr {
+  display: none;
+}
+
+.sidebar--collapsed #folder-nav {
+  overflow: visible;
+}
+
+.sidebar--collapsed .cs-sidebar__group {
+  align-items: stretch;
+}
+
+.sidebar--collapsed .cs-sidebar__item {
+  justify-content: center;
+  min-height: 28px;
+  padding-inline: 0;
+}
+
+.sidebar--collapsed .cs-sidebar__lead {
+  justify-content: center;
+}
+
+.sidebar--collapsed .cs-sidebar__status {
+  width: 12px;
+  height: 12px;
+}
+
+.sidebar--rail {
+  flex-basis: 72px;
+  min-width: 72px;
+  max-width: 72px;
+}
+
+.sidebar--rail .pane-heading h2,
+.sidebar--rail .pane-kicker,
+.sidebar--rail .cs-sidebar__label,
+.sidebar--rail .cs-sidebar__name,
+.sidebar--rail .cs-sidebar__count,
+.sidebar--rail .sidebar-separator,
+.sidebar--rail .cs-hr {
+  display: none;
+}
+
+.sidebar--rail .cs-sidebar__item {
+  justify-content: center;
+  min-height: 32px;
+  padding-inline: 0;
+}
+
+.sidebar--rail .cs-sidebar__lead {
+  justify-content: center;
+}
+
+.sidebar--rail .cs-sidebar__status {
+  width: 12px;
+  height: 12px;
 }
 
 .message-list-pane,
@@ -465,6 +546,10 @@ body.mail-app {
   padding: 2px 0 4px;
 }
 
+.cs-sidebar__item-title {
+  display: none;
+}
+
 .empty-state {
   display: grid;
   gap: 8px;
@@ -682,6 +767,10 @@ body.mail-app {
     display: block;
   }
 
+  .sidebar-toggle-shell {
+    display: none;
+  }
+
   .app-container {
     display: grid;
     grid-template-columns: 1fr;
@@ -729,6 +818,10 @@ body.mail-app {
     display: block;
   }
 
+  .sidebar-toggle-shell {
+    display: none;
+  }
+
   .app-container {
     display: grid;
     grid-template-columns: minmax(220px, 0.8fr) minmax(0, 1.2fr);
@@ -748,6 +841,12 @@ body.mail-app {
     display: grid;
     grid-template-columns: minmax(220px, 0.85fr) minmax(0, 1.15fr);
   }
+
+  .sidebar {
+    flex: 0 0 72px;
+    min-width: 72px;
+    max-width: 72px;
+  }
 }
 
 @media (min-width: 900px) and (max-width: 1099px) {
@@ -764,6 +863,10 @@ body.mail-app {
     justify-content: flex-start;
   }
 
+  .sidebar-toggle-shell {
+    display: none;
+  }
+
   .app-container {
     display: grid;
     grid-template-columns: minmax(220px, 0.75fr) minmax(320px, 1fr) minmax(320px, 1fr);
@@ -773,5 +876,9 @@ body.mail-app {
 @media (min-width: 1100px) {
   .component-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mobile-switcher-shell {
+    display: none;
   }
 }

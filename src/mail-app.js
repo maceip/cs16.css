@@ -211,6 +211,7 @@ const appState = {
   searchQuery: van.state(""),
   readerTab: van.state("html"),
   mobilePane: van.state("ledger"),
+  sidebarMode: van.state("expanded"),
   transmissionProgress: van.state(0),
   transmissionLabel: van.state("TRANSMITTING PAYLOAD"),
   hudCount: van.state(1),
@@ -330,6 +331,50 @@ function setActiveFolder(folderId) {
 function setMobilePane(pane) {
   appState.mobilePane.val = pane;
   document.body.dataset.mobilePane = pane;
+}
+
+function getViewportMode() {
+  if (window.matchMedia("(max-width: 479px)").matches) return "mobile";
+  if (
+    window.matchMedia(
+      "(min-width: 600px) and (max-width: 900px) and (orientation: portrait)"
+    ).matches
+  ) {
+    return "foldable";
+  }
+  return "standard";
+}
+
+function applySidebarMode(mode) {
+  appState.sidebarMode.val = mode;
+  document.body.dataset.sidebarMode = mode;
+}
+
+function syncSidebarMode() {
+  const viewportMode = getViewportMode();
+
+  if (viewportMode === "foldable") {
+    applySidebarMode("rail");
+    return;
+  }
+
+  if (viewportMode === "mobile") {
+    applySidebarMode("expanded");
+    return;
+  }
+
+  if (appState.sidebarMode.val === "rail") {
+    applySidebarMode("expanded");
+    return;
+  }
+
+  document.body.dataset.sidebarMode = appState.sidebarMode.val;
+}
+
+function toggleSidebarMode() {
+  if (getViewportMode() !== "standard") return;
+  applySidebarMode(appState.sidebarMode.val === "collapsed" ? "expanded" : "collapsed");
+  initSplitLayout();
 }
 
 function selectMessage(messageId) {
@@ -542,6 +587,19 @@ function FolderSidebar() {
       span({ class: "cs-sidebar__label" }, "CUSTOM TAGS"),
       () => groups().tag.map(renderFolder)
     )
+  );
+}
+
+function SidebarToggleButton() {
+  return button(
+    {
+      type: "button",
+      class: "cs-btn sidebar-toggle-btn",
+      onclick: toggleSidebarMode,
+      title: () =>
+        appState.sidebarMode.val === "collapsed" ? "Expand sidebar" : "Collapse sidebar",
+    },
+    () => (appState.sidebarMode.val === "collapsed" ? ">>" : "<<")
   );
 }
 
@@ -1014,6 +1072,7 @@ function mountApp() {
   const mobileSwitcher = document.getElementById("mobile-switcher");
   const dockRoot = document.getElementById("command-dock");
   const showcaseRoot = document.getElementById("modern-showcase");
+  const sidebarToggle = document.getElementById("sidebar-toggle");
 
   if (folderNav) {
     folderNav.innerHTML = "";
@@ -1038,6 +1097,11 @@ function mountApp() {
   if (mobileSwitcher) {
     mobileSwitcher.innerHTML = "";
     van.add(mobileSwitcher, MobileSwitcher);
+  }
+
+  if (sidebarToggle) {
+    sidebarToggle.innerHTML = "";
+    van.add(sidebarToggle, SidebarToggleButton);
   }
 
   if (dockRoot) {
@@ -1095,6 +1159,7 @@ function initSplitLayout() {
   }
 
   if (window.innerWidth < 1100) return;
+  if (appState.sidebarMode.val === "collapsed" || appState.sidebarMode.val === "rail") return;
 
   const sidebar = document.getElementById("sidebar-pane");
   const ledger = document.getElementById("ledger-pane");
@@ -1263,6 +1328,7 @@ function initPointerEffects() {
 
 function initResponsiveTracking() {
   const apply = () => {
+    syncSidebarMode();
     if (window.innerWidth >= 821) {
       document.body.dataset.mobilePane = "ledger";
     } else {

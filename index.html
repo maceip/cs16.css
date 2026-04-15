@@ -73,10 +73,19 @@
     <main class="app-shell">
       <div class="app-container" id="app-container">
         <aside class="sidebar pane-shell" id="sidebar-pane">
-          <div class="pane-heading">
+          <div class="pane-heading pane-heading--row">
             <p class="pane-kicker">Tactical Sidebar</p>
-            <h2>Folder Navigation</h2>
+            <button
+              type="button"
+              class="cs-btn sidebar-toggle"
+              id="sidebar-toggle"
+              aria-controls="sidebar-pane"
+              aria-expanded="true"
+            >
+              Hide
+            </button>
           </div>
+          <h2 class="sidebar-title">Folder Navigation</h2>
           <hr class="cs-hr" />
           <nav id="folder-nav" aria-label="Mailbox folders"></nav>
         </aside>
