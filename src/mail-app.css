@@ -686,10 +686,19 @@ body.mail-app {
   gap: 8px;
 }
 
+.modern-group {
+  display: grid;
+  gap: 8px;
+}
+
 .modern-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
+}
+
+.modern-grid--feature {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .modern-card {
@@ -712,6 +721,80 @@ body.mail-app {
 .modern-card__copy {
   color: var(--secondary-text);
   max-width: 38ch;
+}
+
+.vx-terminal-pane__state {
+  color: white;
+  font-size: 11px;
+  line-height: 11px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+}
+
+.vx-sequencer {
+  display: grid;
+  gap: 12px;
+}
+
+.vx-sequencer__rail {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  align-items: stretch;
+}
+
+.vx-sequencer__track {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  top: calc(50% - 1px);
+  height: 2px;
+  background-color: var(--border-light);
+  z-index: 0;
+}
+
+.vx-sequencer__node {
+  position: relative;
+  z-index: 1;
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 44px;
+  display: grid;
+  gap: 3px;
+  justify-items: start;
+}
+
+.vx-sequencer__node-label,
+.vx-sequencer__node-state {
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+
+.vx-sequencer__node-state {
+  color: var(--text-3);
+  font-size: 11px;
+  line-height: 11px;
+}
+
+.vx-sequencer__node.is-active .vx-sequencer__node-state,
+.vx-sequencer__node.is-valid .vx-sequencer__node-state {
+  color: var(--accent);
+}
+
+.vx-sequencer__detail {
+  display: grid;
+  gap: 8px;
+}
+
+.vx-sequencer__summary {
+  display: grid;
+  gap: 4px;
+  padding: 8px;
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  background-color: var(--secondary-bg);
 }
 
 .vx-terminal-pane .vx-data-block,
@@ -861,6 +944,7 @@ body.mail-app {
   .compose-grid,
   .component-grid,
   .modern-grid,
+  .modern-grid--feature,
   .tilt-grid,
   .showcase-overview,
   .component-index__list {
@@ -915,6 +999,7 @@ body.mail-app {
   .app-header-bottom,
   .component-grid,
   .modern-grid,
+  .modern-grid--feature,
   .showcase-overview,
   .component-index__list {
     grid-template-columns: 1fr;

@@ -223,6 +223,7 @@ const sequenceSteps = [
   {
     id: "boot",
     label: "BOOT",
+    summary: "Generate device quote and lock measurement state.",
     log: [
       "[BOOT] Stage 0 fuse table acknowledged.",
       "[BOOT] CPU quote seed generated.",
@@ -232,6 +233,7 @@ const sequenceSteps = [
   {
     id: "attest",
     label: "ATTEST",
+    summary: "Verify the quote against the manufacturer root chain.",
     log: [
       "[ATTEST] Manufacturer root chain loaded.",
       "[ATTEST] Quote signature verified.",
@@ -241,6 +243,7 @@ const sequenceSteps = [
   {
     id: "gated-kms",
     label: "GATED_KMS",
+    summary: "Release session keys only after attestation succeeds.",
     log: [
       "[GATED_KMS] Session grant requested.",
       "[GATED_KMS] Hardware proof accepted.",
@@ -1117,6 +1120,7 @@ function AdversarialMirror() {
         div(
           { class: "vx-terminal-pane" },
           p({ class: "vx-terminal-pane__label" }, "Trusted Process"),
+          p({ class: "vx-terminal-pane__state" }, "DECRYPTED MEMORY"),
           div(
             { class: "vx-data-block vx-terminal-pane__log" },
             () => mirrorPlaintext.join("\n")
@@ -1125,6 +1129,10 @@ function AdversarialMirror() {
         div(
           { class: "vx-terminal-pane" },
           p({ class: "vx-terminal-pane__label" }, "Adversary View"),
+          p(
+            { class: "vx-terminal-pane__state" },
+            () => (appState.mirrorTeeEnabled.val ? "SEALED NOISE" : "PLAIN TEXT")
+          ),
           div(
             { class: "vx-data-block vx-terminal-pane__log" },
             () =>
@@ -1174,6 +1182,11 @@ function TypeShuffleModule() {
 function OuroborosSequencer() {
   const activeStep = () =>
     sequenceSteps.find((step) => step.id === appState.sequenceStep.val) ?? sequenceSteps[0];
+  const activeIndex = () =>
+    Math.max(
+      0,
+      sequenceSteps.findIndex((step) => step.id === appState.sequenceStep.val)
+    );
 
   return fieldset(
     { class: "cs-fieldset modern-card", id: "logic-ouroboros" },
@@ -1182,24 +1195,49 @@ function OuroborosSequencer() {
       { class: "vx-sequencer" },
       div(
         { class: "vx-sequencer__rail" },
+        div({ class: "vx-sequencer__track", "aria-hidden": "true" }),
         sequenceSteps.map((step, index) =>
           button(
             {
               type: "button",
               class: () =>
                 `cs-btn vx-sequencer__node ${
-                  appState.sequenceStep.val === step.id ? "is-active" : index < sequenceSteps.findIndex((item) => item.id === appState.sequenceStep.val) ? "is-valid" : ""
+                  appState.sequenceStep.val === step.id
+                    ? "is-active"
+                    : index < activeIndex()
+                      ? "is-valid"
+                      : ""
                 }`,
               onclick: () => setSequenceStep(step.id),
             },
-            step.label
+            span({ class: "vx-sequencer__node-label" }, step.label),
+            span(
+              { class: "vx-sequencer__node-state" },
+              () =>
+                appState.sequenceStep.val === step.id
+                  ? "ACTIVE"
+                  : index < activeIndex()
+                    ? "VALID"
+                    : "WAIT"
+            )
           )
         )
       ),
       div(
-        { class: "vx-terminal-pane" },
-        p({ class: "vx-sequencer__title" }, () => `${activeStep().label} Validation Log`),
-        div({ class: "vx-data-block vx-terminal-pane__log" }, () => activeStep().log.join("\n"))
+        { class: "vx-sequencer__detail" },
+        div(
+          { class: "vx-sequencer__summary" },
+          p({ class: "vx-sequencer__title" }, () => `${activeStep().label} Validation`),
+          p({ class: "modern-card__copy" }, () => activeStep().summary)
+        ),
+        div(
+          { class: "vx-terminal-pane" },
+          p({ class: "vx-sequencer__title" }, () => `${activeStep().label} Validation Log`),
+          div(
+            { class: "vx-data-block vx-terminal-pane__log" },
+            () => activeStep().log.join("\n")
+          )
+        )
       )
     )
   );
@@ -1253,11 +1291,29 @@ function ModernComponentsPanel() {
       h2(null, "Extended CS16 Component Suite")
     ),
     div(
-      { class: "modern-grid" },
-      AdversarialMirror(),
-      OuroborosSequencer(),
-      HexLogicOverlay(),
-      TypeShuffleModule(),
+      { class: "modern-group" },
+      div(
+        { class: "pane-heading" },
+        p({ class: "pane-kicker" }, "Attestation Modules"),
+        h2(null, "Proof + Verification Demos")
+      ),
+      div(
+        { class: "modern-grid modern-grid--feature" },
+        AdversarialMirror(),
+        OuroborosSequencer(),
+        HexLogicOverlay(),
+        TypeShuffleModule()
+      )
+    ),
+    div(
+      { class: "modern-group" },
+      div(
+        { class: "pane-heading" },
+        p({ class: "pane-kicker" }, "UI Extensions"),
+        h2(null, "Component Primitives")
+      ),
+      div(
+        { class: "modern-grid" },
       fieldset(
         { class: "cs-fieldset modern-card" },
         legend(null, "Animated / Sliding Numbers"),
@@ -1350,6 +1406,7 @@ function ModernComponentsPanel() {
             button({ class: "cs-btn cs-magnetic", type: "button" }, "Track")
           )
         )
+      )
       )
     )
   );
@@ -1500,6 +1557,7 @@ function initDialogs() {
 
 function initControls() {
   document.getElementById("new-message-btn")?.addEventListener("click", openComposeDialog);
+  document.getElementById("compose-preview-btn")?.addEventListener("click", openComposeDialog);
   document.getElementById("compose-send")?.addEventListener("click", sendComposeMessage);
 
   document.querySelectorAll("[data-template]").forEach((buttonEl) => {
