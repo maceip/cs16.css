@@ -508,7 +508,7 @@ function FolderSidebar() {
       {
         type: "button",
         class: () =>
-          `cs-btn cs-sidebar__item cs-magnetic ${
+          `cs-btn cs-sidebar__item ${
             appState.selectedFolder.val === folder.id ? "is-active" : ""
           }`,
         style: `--status: ${folder.status};`,
@@ -779,7 +779,7 @@ function ReaderTabs() {
           button(
             {
               type: "button",
-              class: "cs-btn cs-magnetic",
+              class: "cs-btn",
               onclick: () => {
                 document.getElementById("compose-to").value = message.email;
                 document.getElementById("compose-subject").value = `RE: ${message.subject}`;
@@ -791,7 +791,7 @@ function ReaderTabs() {
           button(
             {
               type: "button",
-              class: "cs-btn cs-magnetic",
+              class: "cs-btn",
               onclick: () => archiveMessage(message.id),
             },
             "Archive"
@@ -799,7 +799,7 @@ function ReaderTabs() {
           button(
             {
               type: "button",
-              class: "cs-btn cs-magnetic",
+              class: "cs-btn",
               onclick: () => deleteMessage(message.id),
             },
             "Delete"
@@ -889,7 +889,7 @@ function Dock() {
       button(
         {
           type: "button",
-          class: "cs-btn cs-dock__item cs-magnetic",
+          class: "cs-btn cs-dock__item",
           onclick: item.action,
         },
         span({ class: "cs-dock__tooltip" }, item.label),
@@ -910,15 +910,24 @@ function ModernComponentsPanel() {
     div(
       { class: "modern-grid" },
       section(
-        { class: "modern-card cs-spotlight", id: "spotlight-card" },
-        p({ class: "modern-card__kicker" }, "Glow / Spotlight / Tilt"),
+        { class: "modern-card" },
+        p({ class: "modern-card__kicker" }, "Animated / Sliding Numbers"),
         div(
-          { class: "modern-card__stack cs-tilt", id: "tilt-card" },
-          button({ class: "cs-btn cs-glow cs-magnetic", type: "button" }, "Highlight")
+          { class: "modern-card__stack" },
+          div(
+            { class: "metric-grid" },
+            AnimatedStat("Unread", appState.metrics.unread),
+            AnimatedStat("Priority", appState.metrics.priority)
+          ),
+          div(
+            { class: "header-stats__sliding" },
+            span({ class: "header-stats__label" }, "Queue Depth"),
+            SlidingNumber()
+          )
         ),
         p(
           { class: "modern-card__copy" },
-          "Spotlight tracks the pointer while the card tilts in shallow tactical parallax."
+          "Numeric modules keep the same inset box language as the library's stock controls."
         )
       ),
       section(
@@ -955,12 +964,12 @@ function ModernComponentsPanel() {
       ),
       section(
         { class: "modern-card" },
-        p({ class: "modern-card__kicker" }, "Popover / Blur / Transmission"),
+        p({ class: "modern-card__kicker" }, "Popover / Transmission"),
         div(
           { class: "modern-card__stack" },
           button({
             type: "button",
-            class: "cs-btn cs-magnetic",
+            class: "cs-btn",
             popovertarget: "quick-actions-popover",
           }, "Open Popover"),
           div(
@@ -974,6 +983,22 @@ function ModernComponentsPanel() {
               { class: "cs-progress-bar" },
               div({ class: "bars" })
             )
+          )
+        )
+      ),
+      section(
+        { class: "modern-card" },
+        p({ class: "modern-card__kicker" }, "Spotlight / Tilt / Magnetic"),
+        div(
+          { class: "modern-card__stack cs-spotlight", id: "spotlight-card" },
+          div(
+            { class: "tilt-panel cs-tilt", id: "tilt-card" },
+            div(
+              { class: "tilt-panel__top" },
+              p({ class: "tilt-panel__stamp" }, "POINTER TEST"),
+              p({ class: "modern-card__copy" }, "Lightweight pointer tracking inside a stock boxed panel.")
+            ),
+            button({ class: "cs-btn cs-magnetic", type: "button" }, "Track")
           )
         )
       )
@@ -1127,6 +1152,18 @@ function initControls() {
 
   document.querySelectorAll("[data-quick-action]").forEach((buttonEl) => {
     buttonEl.addEventListener("click", () => applyQuickAction(buttonEl.dataset.quickAction));
+  });
+
+  document.getElementById("app-mode-trigger")?.addEventListener("click", () => {
+    const menu = document.getElementById("app-mode-popover");
+    if (!menu) return;
+    if (typeof menu.showPopover === "function") {
+      if (menu.matches(":popover-open")) {
+        menu.hidePopover();
+      } else {
+        menu.showPopover();
+      }
+    }
   });
 }
 
