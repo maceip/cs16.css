@@ -1069,13 +1069,13 @@ body {
 }
 
 .cs-dock__item:hover {
-  transform: translateY(-5px) scale(1.08);
-  filter: brightness(1.08);
+  transform: translateY(-1px);
+  filter: brightness(1.03);
 }
 
 .cs-dock__item:has(+ .cs-dock__item:hover),
 .cs-dock__item:hover + .cs-dock__item {
-  transform: translateY(-2px) scale(1.03);
+  transform: translateY(-1px);
 }
 
 .cs-dock__tooltip {
@@ -1136,26 +1136,31 @@ body {
 
 .cs-image-compare__pane--base {
   background:
-    radial-gradient(circle at 30% 35%, rgba(255, 255, 255, 0.28), transparent 18%),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--bg) 92%, white),
-      color-mix(in srgb, var(--secondary-bg) 82%, black) 55%,
-      color-mix(in srgb, var(--border-dark) 90%, black)
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--bg) 96%, white) 0 6px,
+      color-mix(in srgb, var(--secondary-bg) 92%, black) 6px 12px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.04) 0 2px,
+      transparent 2px 12px
     );
 }
 
 .cs-image-compare__pane--overlay {
   clip-path: inset(0 calc(100% - var(--split)) 0 0);
   background:
-    radial-gradient(circle at 62% 42%, rgba(255, 255, 255, 0.42), transparent 16%),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--border-light) 72%, white),
-      color-mix(in srgb, var(--bg) 88%, black) 50%,
-      color-mix(in srgb, var(--border-dark) 94%, black)
+    repeating-linear-gradient(
+      0deg,
+      color-mix(in srgb, var(--border-light) 74%, white) 0 6px,
+      color-mix(in srgb, var(--bg) 90%, black) 6px 12px
     ),
-    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.06) 0 4px, transparent 4px 8px);
+    repeating-linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.05) 0 2px,
+      transparent 2px 12px
+    );
 }
 
 .cs-image-compare__divider {
@@ -1247,7 +1252,7 @@ body {
 .cs-spinning-text svg {
   width: 100%;
   height: 100%;
-  animation: cs-spinning-text-rotate 12s linear infinite;
+  animation: cs-spinning-text-rotate 18s linear infinite;
 }
 
 .cs-spinning-text text {
@@ -1266,16 +1271,12 @@ body {
 .cs-tilt {
   transform-style: preserve-3d;
   transform: perspective(1100px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
-  transition: transform 0.14s ease, box-shadow 0.2s ease;
-}
-
-.cs-tilt:hover {
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  transition: transform 0.14s ease;
 }
 
 .cs-morph-dialog {
   opacity: 0;
-  transform: translateY(-18px) scale(0.94);
+  transform: translateY(-6px);
   transform-origin: var(--dialog-origin-x, 50%) var(--dialog-origin-y, 20%);
   transition:
     opacity 0.2s ease,
@@ -1286,7 +1287,7 @@ body {
 
 .cs-morph-dialog[open] {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
 
 .cs-morph-dialog::backdrop {
@@ -1297,7 +1298,7 @@ body {
 @starting-style {
   .cs-morph-dialog[open] {
     opacity: 0;
-    transform: translateY(-24px) scale(0.88);
+    transform: translateY(-6px);
   }
 }
 
@@ -1343,7 +1344,7 @@ body {
   background-color: color-mix(in srgb, var(--bg) 94%, black);
   color: var(--text);
   opacity: 0;
-  transform: translateY(-8px) scale(0.94);
+  transform: translateY(-4px);
   transform-origin: var(--popover-origin, top center);
   transition:
     opacity 0.18s ease,
@@ -1354,13 +1355,13 @@ body {
 
 .cs-morph-popover:popover-open {
   opacity: 1;
-  transform: translateY(0) scale(1);
+  transform: translateY(0);
 }
 
 @starting-style {
   .cs-morph-popover:popover-open {
     opacity: 0;
-    transform: translateY(-12px) scale(0.88);
+    transform: translateY(-4px);
   }
 }
 

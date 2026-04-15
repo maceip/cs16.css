@@ -909,9 +909,9 @@ function ModernComponentsPanel() {
     ),
     div(
       { class: "modern-grid" },
-      section(
-        { class: "modern-card" },
-        p({ class: "modern-card__kicker" }, "Animated / Sliding Numbers"),
+      fieldset(
+        { class: "cs-fieldset modern-card" },
+        legend(null, "Animated / Sliding Numbers"),
         div(
           { class: "modern-card__stack" },
           div(
@@ -930,9 +930,9 @@ function ModernComponentsPanel() {
           "Numeric modules keep the same inset box language as the library's stock controls."
         )
       ),
-      section(
-        { class: "modern-card" },
-        p({ class: "modern-card__kicker" }, "Image Comparison"),
+      fieldset(
+        { class: "cs-fieldset modern-card" },
+        legend(null, "Image Comparison"),
         div(
           { class: "cs-image-compare", id: "image-compare", style: "--split: 58%;" },
           div({ class: "cs-image-compare__pane cs-image-compare__pane--base" }),
@@ -948,9 +948,9 @@ function ModernComponentsPanel() {
           })
         )
       ),
-      section(
-        { class: "modern-card" },
-        p({ class: "modern-card__kicker" }, "Dock / Spinning Text"),
+      fieldset(
+        { class: "cs-fieldset modern-card" },
+        legend(null, "Dock / Spinning Text"),
         Dock(),
         div(
           { class: "cs-spinning-text" },
@@ -962,9 +962,9 @@ function ModernComponentsPanel() {
           )
         )
       ),
-      section(
-        { class: "modern-card" },
-        p({ class: "modern-card__kicker" }, "Popover / Transmission"),
+      fieldset(
+        { class: "cs-fieldset modern-card" },
+        legend(null, "Popover / Transmission"),
         div(
           { class: "modern-card__stack" },
           button({
@@ -986,9 +986,9 @@ function ModernComponentsPanel() {
           )
         )
       ),
-      section(
-        { class: "modern-card" },
-        p({ class: "modern-card__kicker" }, "Spotlight / Tilt / Magnetic"),
+      fieldset(
+        { class: "cs-fieldset modern-card" },
+        legend(null, "Spotlight / Tilt / Magnetic"),
         div(
           { class: "modern-card__stack cs-spotlight", id: "spotlight-card" },
           div(
@@ -1233,8 +1233,8 @@ function initPointerEffects() {
 
   tilt?.addEventListener("pointermove", (event) => {
     const rect = tilt.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 10;
-    const y = ((event.clientY - rect.top) / rect.height - 0.5) * -10;
+    const x = ((event.clientX - rect.left) / rect.width - 0.5) * 4;
+    const y = ((event.clientY - rect.top) / rect.height - 0.5) * -4;
     tilt.style.setProperty("--ry", `${x.toFixed(2)}deg`);
     tilt.style.setProperty("--rx", `${y.toFixed(2)}deg`);
   });
@@ -1248,10 +1248,10 @@ function initPointerEffects() {
       cancelAnimationFrame(motionRaf);
       motionRaf = requestAnimationFrame(() => {
         const rect = node.getBoundingClientRect();
-        const x = (event.clientX - (rect.left + rect.width / 2)) * 0.12;
-        const y = (event.clientY - (rect.top + rect.height / 2)) * 0.12;
-        node.style.setProperty("--magnetic-x", `${Math.max(-8, Math.min(8, x))}px`);
-        node.style.setProperty("--magnetic-y", `${Math.max(-8, Math.min(8, y))}px`);
+        const x = (event.clientX - (rect.left + rect.width / 2)) * 0.05;
+        const y = (event.clientY - (rect.top + rect.height / 2)) * 0.05;
+        node.style.setProperty("--magnetic-x", `${Math.max(-3, Math.min(3, x))}px`);
+        node.style.setProperty("--magnetic-y", `${Math.max(-3, Math.min(3, y))}px`);
       });
     });
     node.addEventListener("pointerleave", () => {

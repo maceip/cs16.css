@@ -518,25 +518,18 @@ body.mail-app {
 
 .modern-card {
   min-height: 0;
-  background-color: var(--bg);
-  border: 1px solid;
-  border-color: var(--border-light) var(--border-dark) var(--border-dark) var(--border-light);
-  padding: 8px;
+  padding: 8px 10px 10px;
   display: grid;
   gap: 8px;
 }
 
-.modern-card__kicker {
-  color: var(--text-3);
-  text-transform: uppercase;
-  font-size: 12px;
-  line-height: 12px;
-  letter-spacing: 1px;
+.modern-card legend {
+  margin-bottom: 8px;
 }
 
 .modern-card__stack {
   display: grid;
-  gap: 10px;
+  gap: 8px;
   align-content: start;
 }
 
@@ -625,10 +618,7 @@ body.mail-app {
 }
 
 .command-dock-shell {
-  position: sticky;
-  bottom: 0;
   padding-bottom: 18px;
-  z-index: 1200;
 }
 
 .command-dock-shell > div {
