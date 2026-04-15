@@ -203,6 +203,60 @@ const seedMessages = [
   }),
 ];
 
+const mirrorPlaintext = [
+  "pid=4412 target=/proc/4412/mem",
+  "scan: API_TOKEN=ghp_xxxxxxx",
+  "scan: PRIVATE_KEY=0x7f3ab91d22",
+  "scan: SESSION_NONCE=9ab4f311",
+  "scan: payload_state=decrypted",
+];
+
+const mirrorEncrypted = [
+  "pid=4412 target=/proc/4412/mem",
+  "scan: 8f a1 44 0c 9a 77 2d",
+  "scan: c4 1a 0e ff 77 90 3b",
+  "scan: 10 d2 9c 5a 3f 81 44",
+  "scan: payload_state=sealed",
+];
+
+const sequenceSteps = [
+  {
+    id: "boot",
+    label: "BOOT",
+    log: [
+      "[BOOT] Stage 0 fuse table acknowledged.",
+      "[BOOT] CPU quote seed generated.",
+      "[BOOT] Measurement register locked.",
+    ],
+  },
+  {
+    id: "attest",
+    label: "ATTEST",
+    log: [
+      "[ATTEST] Manufacturer root chain loaded.",
+      "[ATTEST] Quote signature verified.",
+      "[ATTEST] PCR and TCB levels match policy.",
+    ],
+  },
+  {
+    id: "gated-kms",
+    label: "GATED_KMS",
+    log: [
+      "[GATED_KMS] Session grant requested.",
+      "[GATED_KMS] Hardware proof accepted.",
+      "[GATED_KMS] Key release gate opened.",
+    ],
+  },
+];
+
+const quoteSegments = [
+  { token: "0x4a01", label: "TEE_MODEL", value: "INTEL_TDX" },
+  { token: "0x8802", label: "PCR_HASH_MATCH", value: "VALID" },
+  { token: "0x3f7c", label: "TCB_LEVEL", value: "CURRENT" },
+  { token: "0xa190", label: "KEY_SCOPE", value: "GATED_KMS" },
+  { token: "0xc0de", label: "QUOTE_AGE", value: "42MS" },
+];
+
 const appState = {
   folders: van.state(folderDefinitions),
   messages: van.state(seedMessages),
@@ -212,6 +266,9 @@ const appState = {
   readerTab: van.state("html"),
   mobilePane: van.state("ledger"),
   sidebarMode: van.state("expanded"),
+  mirrorTeeEnabled: van.state(true),
+  sequenceStep: van.state("boot"),
+  hoveredQuoteToken: van.state(quoteSegments[0].token),
   transmissionProgress: van.state(0),
   transmissionLabel: van.state("TRANSMITTING PAYLOAD"),
   hudCount: van.state(1),
@@ -375,6 +432,18 @@ function toggleSidebarMode() {
   if (getViewportMode() !== "standard") return;
   applySidebarMode(appState.sidebarMode.val === "collapsed" ? "expanded" : "collapsed");
   initSplitLayout();
+}
+
+function toggleMirrorTee() {
+  appState.mirrorTeeEnabled.val = !appState.mirrorTeeEnabled.val;
+}
+
+function setSequenceStep(stepId) {
+  appState.sequenceStep.val = stepId;
+}
+
+function setHoveredQuoteToken(token) {
+  appState.hoveredQuoteToken.val = token;
 }
 
 function selectMessage(messageId) {
@@ -957,6 +1026,122 @@ function Dock() {
   );
 }
 
+function AdversarialMirror() {
+  return fieldset(
+    { class: "cs-fieldset modern-card", id: "adversarial-mirror" },
+    legend(null, "Adversarial Mirror"),
+    div(
+      { class: "modern-card__stack" },
+      button(
+        {
+          type: "button",
+          class: "cs-btn",
+          onclick: toggleMirrorTee,
+        },
+        () => `TEE ${appState.mirrorTeeEnabled.val ? "ON" : "OFF"}`
+      ),
+      div(
+        { class: "vx-terminal-grid" },
+        div(
+          { class: "vx-terminal-pane" },
+          p({ class: "vx-terminal-pane__label" }, "Process Memory"),
+          div(
+            { class: "vx-data-block vx-terminal-pane__log" },
+            () =>
+              (appState.mirrorTeeEnabled.val ? mirrorEncrypted : mirrorPlaintext).join("\n")
+          )
+        ),
+        div(
+          { class: "vx-terminal-pane" },
+          p({ class: "vx-terminal-pane__label" }, "Scraper Output"),
+          div(
+            { class: "vx-data-block vx-terminal-pane__log" },
+            () =>
+              (appState.mirrorTeeEnabled.val ? mirrorEncrypted : mirrorPlaintext).join("\n")
+          )
+        )
+      ),
+      p(
+        { class: "modern-card__copy" },
+        "Toggle TEE to swap readable memory output for sealed noise."
+      )
+    )
+  );
+}
+
+function OuroborosSequencer() {
+  const activeStep = () =>
+    sequenceSteps.find((step) => step.id === appState.sequenceStep.val) ?? sequenceSteps[0];
+
+  return fieldset(
+    { class: "cs-fieldset modern-card", id: "logic-ouroboros" },
+    legend(null, "Ouroboros Step-Sequencer"),
+    div(
+      { class: "vx-sequencer" },
+      div(
+        { class: "vx-sequencer__rail" },
+        sequenceSteps.map((step, index) =>
+          button(
+            {
+              type: "button",
+              class: () =>
+                `cs-btn vx-sequencer__node ${
+                  appState.sequenceStep.val === step.id ? "is-active" : index < sequenceSteps.findIndex((item) => item.id === appState.sequenceStep.val) ? "is-valid" : ""
+                }`,
+              onclick: () => setSequenceStep(step.id),
+            },
+            step.label
+          )
+        )
+      ),
+      div(
+        { class: "vx-terminal-pane" },
+        p({ class: "vx-sequencer__title" }, () => `${activeStep().label} Validation Log`),
+        div({ class: "vx-data-block vx-terminal-pane__log" }, () => activeStep().log.join("\n"))
+      )
+    )
+  );
+}
+
+function HexLogicOverlay() {
+  const activeSegment = () =>
+    quoteSegments.find((segment) => segment.token === appState.hoveredQuoteToken.val) ??
+    quoteSegments[0];
+
+  return fieldset(
+    { class: "cs-fieldset modern-card", id: "enclave-audit" },
+    legend(null, "Hex-to-Logic Overlay"),
+    div(
+      { class: "vx-hover-grid" },
+      div(
+        { class: "vx-data-block" },
+        div(
+          { class: "vx-hover-grid__segments" },
+          quoteSegments.map((segment) =>
+            span(
+              {
+                class: "vx-hover-grid__segment",
+                onmouseenter: () => setHoveredQuoteToken(segment.token),
+                onfocus: () => setHoveredQuoteToken(segment.token),
+                tabindex: "0",
+              },
+              segment.token
+            )
+          )
+        )
+      ),
+      div(
+        { class: "vx-hover-hud" },
+        p({ class: "vx-hover-hud__title" }, "Decoded Segment"),
+        div(
+          { class: "vx-data-block" },
+          () => `[${activeSegment().label}: ${activeSegment().value}]`
+        )
+      )
+    )
+  );
+}
+
 function ModernComponentsPanel() {
   return section(
     { class: "modern-panel" },
@@ -967,6 +1152,9 @@ function ModernComponentsPanel() {
     ),
     div(
       { class: "modern-grid" },
+      AdversarialMirror(),
+      OuroborosSequencer(),
+      HexLogicOverlay(),
       fieldset(
         { class: "cs-fieldset modern-card" },
         legend(null, "Animated / Sliding Numbers"),
