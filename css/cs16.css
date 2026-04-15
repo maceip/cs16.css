@@ -5,9 +5,11 @@
   --accent: #c4b550;
   --secondary-accent: #958831;
 
-  --text: #dedfd6;
+  --text: #f0f1eb;
   --secondary-text: #d8ded3;
   --text-3: #a0aa95;
+  --text-dim: rgba(222, 223, 214, 0.7);
+  --accent-glow: #e6d661;
 
   --border-light: #8c9284;
   --border-dark: #292c21;
@@ -61,10 +63,11 @@ h6 {
 
 body {
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1.6;
   background-color: var(--bg);
   color: var(--text);
-  font-family: ArialPixel, system-ui, sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: none;
 }
 
 /* Scrollbars */
@@ -74,7 +77,7 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background-color: var(--scrollbar-track);
+  background-color: var(--border-dark);
   width: 18px;
   border: 1px solid var(--border-dark);
   border-left: 0;
@@ -141,12 +144,16 @@ body {
   padding: 4px 5px 3px;
   font-size: 1rem;
   line-height: 0.9375rem;
+  font-family: ArialPixel, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.03125rem;
   border: 1px solid;
   border-color: var(--border-light) var(--border-dark) var(--border-dark)
     var(--border-light);
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+  transition: filter 0.1s ease, color 0.1s ease;
 
   &.close {
     padding: 0px;
@@ -176,6 +183,12 @@ body {
     text-shadow: var(--disabled-text-shadow) 1px 1px;
     pointer-events: none;
   }
+}
+
+.cs-btn:hover:not(:disabled) {
+  filter: brightness(1.1);
+  color: var(--accent-glow);
+  cursor: crosshair;
 }
 
 /* Hr */
@@ -227,6 +240,9 @@ body {
             user-select: none;
     color: var(--secondary--text);
     line-height: 0.9375rem;
+    font-family: ArialPixel, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
 
     &:before {
       content: "";
@@ -264,6 +280,12 @@ body {
     color: var(--accent);
   }
 
+  &:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 4px rgba(196, 181, 80, 0.3);
+    background-color: #2e3529;
+  }
+
   &::-moz-selection {
     background-color: var(--secondary-accent);
     color: white;
@@ -292,6 +314,9 @@ body {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+  font-family: ArialPixel, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.03125rem;
 }
 
 /* Select */
@@ -336,6 +361,9 @@ body {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+  font-family: ArialPixel, monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.03125rem;
 }
 
 /* Radio Group */
@@ -349,6 +377,9 @@ body {
   legend {
     color: var(--secondary--text);
     margin-bottom: 10px;
+    font-family: ArialPixel, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
   }
 
   > div {
@@ -519,6 +550,7 @@ body {
   -webkit-user-select: none;
      -moz-user-select: none;
           user-select: none;
+  box-shadow: 10px 10px 0 rgba(0, 0, 0, 0.3);
 
   .heading {
     display: flex;
@@ -542,12 +574,17 @@ body {
         font-size: 1rem;
         line-height: 0.9375rem;
         color: white;
+        font-family: ArialPixel, monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.03125rem;
       }
     }
   }
 
   .content {
-    padding: 10px;
+    padding: 15px 20px;
+    max-height: 80vh;
+    overflow-y: auto;
   }
 
   .footer-btns {
@@ -634,6 +671,9 @@ body {
     font-size: 1rem;
     color: white;
     line-height: 0.9375rem;
+    font-family: ArialPixel, monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.03125rem;
     height: 27px;
     padding: 4px 5px;
     text-align: left;
@@ -1452,6 +1492,148 @@ body {
   50% {
     opacity: 1;
   }
+}
+
+.vx-data-block {
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  background-color: var(--border-dark);
+  color: var(--accent);
+  padding: 12px;
+  border: 1px inset var(--border-light);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  position: relative;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.vx-data-block::before {
+  content: "ENCLAVE_DATA_STREAM";
+  position: absolute;
+  top: 0;
+  right: 10px;
+  font-size: 0.6rem;
+  color: var(--text-3);
+  opacity: 0.5;
+}
+
+.vx-side-rail {
+  position: fixed;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  z-index: 100;
+}
+
+.vx-rail-link {
+  font-family: ArialPixel, monospace;
+  text-transform: uppercase;
+  color: var(--text-3);
+  text-decoration: none;
+  font-size: 0.8rem;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 0.125rem;
+  padding: 10px 0;
+  border-right: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.vx-rail-link:hover {
+  color: var(--accent);
+  border-right: 2px solid var(--accent);
+  cursor: crosshair;
+}
+
+.vx-terminal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.vx-terminal-pane {
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  background-color: var(--secondary-bg);
+  padding: 8px;
+}
+
+.vx-terminal-pane__label,
+.vx-sequencer__title,
+.vx-hover-hud__title {
+  color: var(--text-3);
+  font-family: ArialPixel, monospace;
+  font-size: 0.75rem;
+  line-height: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03125rem;
+  margin-bottom: 6px;
+}
+
+.vx-terminal-pane__log {
+  min-height: 160px;
+  max-height: 220px;
+  overflow: auto;
+}
+
+.vx-sequencer {
+  display: grid;
+  gap: 12px;
+}
+
+.vx-sequencer__rail {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.vx-sequencer__node {
+  min-width: 98px;
+}
+
+.vx-sequencer__node.is-active,
+.vx-sequencer__node.is-valid {
+  color: var(--accent);
+}
+
+.vx-hover-grid {
+  display: grid;
+  gap: 10px;
+}
+
+.vx-hover-grid__segments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.vx-hover-grid__segment {
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  background-color: var(--bg);
+  color: var(--secondary-text);
+  padding: 2px 4px 1px;
+  font-family: "JetBrains Mono", "Courier New", monospace;
+  font-size: 0.75rem;
+  line-height: 0.75rem;
+}
+
+.vx-hover-grid__segment:hover {
+  color: var(--accent);
+  cursor: crosshair;
+}
+
+.vx-hover-hud {
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  background-color: var(--secondary-bg);
+  padding: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {
