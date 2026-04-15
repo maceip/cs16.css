@@ -257,6 +257,15 @@ const quoteSegments = [
   { token: "0xc0de", label: "QUOTE_AGE", value: "42MS" },
 ];
 
+const typeShufflePhrases = [
+  "MEASURED BOOT CONFIRMED",
+  "QUOTE VERIFIED AGAINST ROOT",
+  "SESSION KEY GATE OPEN",
+  "ENCLAVE MEMORY SEALED",
+];
+
+const typeShuffleCharset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#%*+-";
+
 const appState = {
   folders: van.state(folderDefinitions),
   messages: van.state(seedMessages),
@@ -294,6 +303,69 @@ let transmissionTimer = null;
 let hudTimer = null;
 let motionRaf = 0;
 let metricsInterval = null;
+
+class TypeShuffleAnimator {
+  constructor(element, phrases) {
+    this.element = element;
+    this.phrases = phrases;
+    this.index = 0;
+    this.raf = 0;
+    this.reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    this.element.textContent = this.phrases[this.index];
+  }
+
+  next() {
+    this.index = (this.index + 1) % this.phrases.length;
+    this.scrambleTo(this.phrases[this.index]);
+  }
+
+  scrambleTo(targetText) {
+    if (this.reducedMotion) {
+      this.element.textContent = targetText;
+      return;
+    }
+
+    cancelAnimationFrame(this.raf);
+
+    const sourceText = this.element.textContent;
+    const maxLength = Math.max(sourceText.length, targetText.length);
+    let frame = 0;
+
+    const tick = () => {
+      let output = "";
+
+      for (let index = 0; index < maxLength; index += 1) {
+        const sourceChar = sourceText[index] ?? " ";
+        const targetChar = targetText[index] ?? " ";
+        const revealPoint = index * 1.4;
+
+        if (frame >= revealPoint + 7) {
+          output += targetChar;
+        } else if (frame >= revealPoint) {
+          output +=
+            targetChar === " "
+              ? " "
+              : typeShuffleCharset[
+                  Math.floor(Math.random() * typeShuffleCharset.length)
+                ];
+        } else {
+          output += sourceChar;
+        }
+      }
+
+      this.element.textContent = output;
+
+      if (frame < maxLength + 8) {
+        frame += 1;
+        this.raf = requestAnimationFrame(tick);
+      } else {
+        this.element.textContent = targetText;
+      }
+    };
+
+    tick();
+  }
+}
 
 function updateMetrics() {
   const messages = appState.messages.val;
@@ -1044,16 +1116,15 @@ function AdversarialMirror() {
         { class: "vx-terminal-grid" },
         div(
           { class: "vx-terminal-pane" },
-          p({ class: "vx-terminal-pane__label" }, "Process Memory"),
+          p({ class: "vx-terminal-pane__label" }, "Trusted Process"),
           div(
             { class: "vx-data-block vx-terminal-pane__log" },
-            () =>
-              (appState.mirrorTeeEnabled.val ? mirrorEncrypted : mirrorPlaintext).join("\n")
+            () => mirrorPlaintext.join("\n")
           )
         ),
         div(
           { class: "vx-terminal-pane" },
-          p({ class: "vx-terminal-pane__label" }, "Scraper Output"),
+          p({ class: "vx-terminal-pane__label" }, "Adversary View"),
           div(
             { class: "vx-data-block vx-terminal-pane__log" },
             () =>
@@ -1064,6 +1135,37 @@ function AdversarialMirror() {
       p(
         { class: "modern-card__copy" },
         "Toggle TEE to swap readable memory output for sealed noise."
+      )
+    )
+  );
+}
+
+function TypeShuffleModule() {
+  return fieldset(
+    { class: "cs-fieldset modern-card", id: "type-shuffle-module" },
+    legend(null, "Type Shuffle"),
+    div(
+      { class: "modern-card__stack" },
+      div(
+        {
+          class: "vx-type-shuffle",
+          id: "type-shuffle-display",
+          tabindex: "0",
+          "aria-live": "polite",
+        },
+        typeShufflePhrases[0]
+      ),
+      button(
+        {
+          type: "button",
+          class: "cs-btn",
+          id: "type-shuffle-trigger",
+        },
+        "Shuffle Signal"
+      ),
+      p(
+        { class: "modern-card__copy" },
+        "Cycles tactical phrases through deterministic noise before resolving the final string."
       )
     )
   );
@@ -1155,6 +1257,7 @@ function ModernComponentsPanel() {
       AdversarialMirror(),
       OuroborosSequencer(),
       HexLogicOverlay(),
+      TypeShuffleModule(),
       fieldset(
         { class: "cs-fieldset modern-card" },
         legend(null, "Animated / Sliding Numbers"),
@@ -1406,18 +1509,6 @@ function initControls() {
   document.querySelectorAll("[data-quick-action]").forEach((buttonEl) => {
     buttonEl.addEventListener("click", () => applyQuickAction(buttonEl.dataset.quickAction));
   });
-
-  document.getElementById("app-mode-trigger")?.addEventListener("click", () => {
-    const menu = document.getElementById("app-mode-popover");
-    if (!menu) return;
-    if (typeof menu.showPopover === "function") {
-      if (menu.matches(":popover-open")) {
-        menu.hidePopover();
-      } else {
-        menu.showPopover();
-      }
-    }
-  });
 }
 
 function initKeyboardShortcuts() {
@@ -1537,6 +1628,19 @@ function initTelemetryAnimations() {
   }, 1300);
 }
 
+function initTypeShuffle() {
+  const display = document.getElementById("type-shuffle-display");
+  const trigger = document.getElementById("type-shuffle-trigger");
+
+  if (!display || !trigger || display.dataset.shuffleInit === "true") return;
+
+  const animator = new TypeShuffleAnimator(display, typeShufflePhrases);
+  display.dataset.shuffleInit = "true";
+
+  trigger.addEventListener("click", () => animator.next());
+  display.addEventListener("focus", () => animator.scrambleTo(typeShufflePhrases[animator.index]));
+}
+
 function init() {
   updateMetrics();
   ensureSelectedMessage();
@@ -1549,6 +1653,7 @@ function init() {
   initPointerEffects();
   initResponsiveTracking();
   initTelemetryAnimations();
+  initTypeShuffle();
 
   window.addEventListener("scroll", updateScrollProgress, { passive: true });
   updateScrollProgress();
