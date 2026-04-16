@@ -1481,33 +1481,58 @@ body {
 
 .vx-side-rail {
   position: fixed;
-  right: 20px;
+  right: 0;
   top: 50%;
   transform: translateY(-50%);
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 6px;
+  padding: 8px 0 8px 8px;
+  background-color: var(--border-dark);
+  border: 1px solid;
+  border-color: var(--border-light) var(--outline) var(--outline)
+    var(--border-light);
+  border-right: 0;
   z-index: 100;
 }
 
 .vx-rail-link {
   font-family: ArialPixel, monospace;
   text-transform: uppercase;
-  color: var(--text-3);
+  color: var(--secondary-text);
   text-decoration: none;
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  letter-spacing: 2px;
-  padding: 10px 0;
-  border-right: 2px solid transparent;
-  transition: all 0.2s ease;
+  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  min-height: 104px;
+  padding: 10px 4px;
+  background-color: var(--secondary-bg);
+  border: 1px solid;
+  border-color: var(--border-light) var(--border-dark) var(--border-dark)
+    var(--border-light);
+  transition:
+    color 0.12s ease,
+    background-color 0.12s ease,
+    transform 0.12s ease;
 }
 
-.vx-rail-link:hover {
+.vx-rail-link:hover,
+.vx-rail-link:focus-visible {
   color: var(--accent);
-  border-right: 2px solid var(--accent);
   cursor: crosshair;
+}
+
+.vx-rail-link.is-active {
+  background-color: var(--accent-glow);
+  color: var(--outline);
+  border-color: var(--accent-glow) var(--border-dark) var(--border-dark)
+    var(--accent-glow);
+  transform: rotate(180deg) translateX(6px);
 }
 
 .vx-terminal-grid {

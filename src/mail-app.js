@@ -306,6 +306,7 @@ let transmissionTimer = null;
 let hudTimer = null;
 let motionRaf = 0;
 let metricsInterval = null;
+let railRaf = 0;
 
 class TypeShuffleAnimator {
   constructor(element, phrases) {
@@ -1699,6 +1700,51 @@ function initTypeShuffle() {
   display.addEventListener("focus", () => animator.scrambleTo(typeShufflePhrases[animator.index]));
 }
 
+function initSideRail() {
+  const links = Array.from(document.querySelectorAll(".vx-rail-link"));
+  if (!links.length) return;
+
+  const sections = links
+    .map((link) => {
+      const id = link.getAttribute("href")?.slice(1);
+      const element = id ? document.getElementById(id) : null;
+      return element ? { link, element } : null;
+    })
+    .filter(Boolean);
+
+  if (!sections.length) return;
+
+  const updateActive = () => {
+    const threshold = window.innerHeight * 0.33;
+    let current = sections[0];
+
+    sections.forEach((entry) => {
+      if (entry.element.getBoundingClientRect().top <= threshold) {
+        current = entry;
+      }
+    });
+
+    sections.forEach((entry) => {
+      const isActive = entry === current;
+      entry.link.classList.toggle("is-active", isActive);
+      if (isActive) {
+        entry.link.setAttribute("aria-current", "true");
+      } else {
+        entry.link.removeAttribute("aria-current");
+      }
+    });
+  };
+
+  const onScroll = () => {
+    cancelAnimationFrame(railRaf);
+    railRaf = requestAnimationFrame(updateActive);
+  };
+
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", updateActive);
+  updateActive();
+}
+
 function init() {
   updateMetrics();
   ensureSelectedMessage();
@@ -1712,6 +1758,7 @@ function init() {
   initResponsiveTracking();
   initTelemetryAnimations();
   initTypeShuffle();
+  initSideRail();
 
   window.addEventListener("scroll", updateScrollProgress, { passive: true });
   updateScrollProgress();
