@@ -6,294 +6,144 @@
     <link rel="stylesheet" href="/css/cs16.min.css" />
     <link rel="stylesheet" href="/src/mail-app.css" />
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
-    <title>cs16 Tactical Mail Grid</title>
+    <title>cs16.css Van Showcase</title>
   </head>
-  <body class="mail-app" data-mobile-pane="ledger">
-    <div class="cs-scroll-progress" aria-hidden="true">
-      <div class="cs-scroll-progress__bar" id="scroll-progress-bar"></div>
-    </div>
-
-    <div class="cs-hud-overlay" id="hud-overlay" aria-hidden="true">
-      <div class="cs-hud-overlay__feed" id="hud-feed"></div>
-      <div class="cs-hud-overlay__counter" id="hud-counter"></div>
-    </div>
-
-    <nav class="vx-side-rail" aria-label="Section rail">
-      <a class="vx-rail-link" href="#overview">[OVERVIEW]</a>
-      <a class="vx-rail-link" href="#sidebar-pane">[FOLDERS]</a>
-      <a class="vx-rail-link" href="#logic-ouroboros">[SEQUENCER]</a>
-      <a class="vx-rail-link" href="#adversarial-mirror">[MIRROR]</a>
-      <a class="vx-rail-link" href="#enclave-audit">[HEX_HUD]</a>
-      <a class="vx-rail-link" href="#command-dock-shell">[DOCK]</a>
-    </nav>
-
-    <header class="app-header" id="overview">
-      <div class="app-header-top">
-        <div class="title-cluster">
-          <p class="title-kicker">CSS 1.6 TACTICAL INTERFACE</p>
-          <h1 class="app-title">TACTICAL MAIL GRID</h1>
-          <p class="title-subcopy">
-            Dense, high-contrast message handling with modern interaction surfaces.
+  <body class="gallery-page">
+    <header class="gallery-header">
+      <div class="gallery-header__top">
+        <div>
+          <p class="gallery-kicker">CS16.CSS COMPONENT GALLERY</p>
+          <h1 class="gallery-title">VAN.JS SHOWCASE</h1>
+          <p class="gallery-copy">
+            Rebuilt from the upstream cs16.css primitives and mapped to the COSS
+            component set without React.
           </p>
         </div>
 
-        <div class="header-stats-shell" id="header-stats"></div>
-
-        <div class="header-actions">
-          <button class="cs-btn" id="new-message-btn">New Message</button>
-          <button
-            class="cs-btn"
-            id="quick-actions-trigger"
-            popovertarget="quick-actions-popover"
-          >
-            Quick Actions
-          </button>
-          <button class="cs-btn" onclick="window.location='/servers'">
-            Server Browser
+        <div class="gallery-header__actions">
+          <button class="cs-btn" id="jump-core-btn" type="button">Core</button>
+          <button class="cs-btn" id="jump-overlay-btn" type="button">Overlay</button>
+          <button class="cs-btn" id="jump-feedback-btn" type="button">Feedback</button>
+          <button class="cs-btn" onclick="window.location='/servers'" type="button">
+            Servers
           </button>
         </div>
       </div>
 
       <hr class="cs-hr" />
 
-      <div class="app-header-bottom">
-        <label class="search-cluster" for="search-input">
-          <span class="cs-input__label">Signal Search</span>
+      <div class="gallery-header__meta">
+        <div class="gallery-badge-row">
+          <span class="gallery-badge">NO REACT</span>
+          <span class="gallery-badge">VAN.JS ONLY</span>
+          <span class="gallery-badge">UPSTREAM CS16 TOKENS</span>
+          <span class="gallery-badge">COSS PARITY TARGET</span>
+        </div>
+        <label class="gallery-search" for="gallery-filter">
+          <span class="cs-input__label">Filter Components</span>
           <input
-            type="search"
+            id="gallery-filter"
             class="cs-input"
-            id="search-input"
-            placeholder="Search sender, subject, dossier text..."
+            type="search"
+            placeholder="Search by component name..."
           />
         </label>
-
-        <div class="mobile-switcher-shell" id="mobile-switcher"></div>
-      </div>
-
-      <div class="app-status-strip">
-        <span class="app-status-strip__label">STATUS:</span>
-        <span class="app-status-strip__item">COMPONENT SHOWCASE</span>
-        <span class="app-status-strip__item">MOBILE READY</span>
-        <span class="app-status-strip__item">FOLDABLE READY</span>
-        <span class="app-status-strip__item">DESKTOP READY</span>
-        <span class="app-status-strip__item">SWIPE LEDGER</span>
       </div>
     </header>
 
-    <main class="app-shell">
-      <section class="pane-shell showcase-summary" id="component-overview">
-        <div class="pane-heading">
-          <p class="pane-kicker">Component Overview</p>
-          <h2>Library + Demo Surface</h2>
-        </div>
-        <hr class="cs-hr" />
-        <div class="showcase-summary__grid">
-          <fieldset class="cs-fieldset">
-            <legend>Core UI</legend>
-            <div class="showcase-summary__list">
-              <p>Buttons</p>
-              <p>Inputs / Textarea</p>
-              <p>Checkboxes</p>
-              <p>Tabs</p>
-              <p>Dialogs</p>
-              <p>Progress Bars</p>
-            </div>
-          </fieldset>
-          <fieldset class="cs-fieldset">
-            <legend>Mail Shell</legend>
-            <div class="showcase-summary__list">
-              <p>Tactical Sidebar</p>
-              <p>Inbox Ledger</p>
-              <p>Reading Pane</p>
-              <p>Compose Console</p>
-              <p>HUD Overlay</p>
-              <p>Transmission Progress</p>
-            </div>
-          </fieldset>
-          <fieldset class="cs-fieldset">
-            <legend>Attestation Modules</legend>
-            <div class="showcase-summary__list">
-              <p>Adversarial Mirror</p>
-              <p>Ouroboros Sequencer</p>
-              <p>Hex HUD Overlay</p>
-              <p>Text Shuffle</p>
-            </div>
-          </fieldset>
-          <fieldset class="cs-fieldset">
-            <legend>Modern Extensions</legend>
-            <div class="showcase-summary__list">
-              <p>Animated Number</p>
-              <p>Sliding Number</p>
-              <p>Dock</p>
-              <p>Image Compare</p>
-              <p>Spotlight / Tilt / Magnetic</p>
-              <p>Popover / Dialog / Progress</p>
-            </div>
-          </fieldset>
-        </div>
-      </section>
+    <main class="gallery-shell">
+      <aside class="gallery-sidebar">
+        <fieldset class="cs-fieldset">
+          <legend>Sections</legend>
+          <div id="gallery-nav"></div>
+        </fieldset>
 
-      <div class="app-container" id="app-container">
-        <aside class="sidebar pane-shell" id="sidebar-pane">
-          <div class="pane-heading pane-heading--row">
-            <p class="pane-kicker">Tactical Sidebar</p>
-            <button
-              type="button"
-              class="cs-btn sidebar-toggle"
-              id="sidebar-toggle"
-              aria-controls="sidebar-pane"
-              aria-expanded="true"
-            >
-              Hide
-            </button>
-          </div>
-          <h2 class="sidebar-title">Folder Navigation</h2>
-          <hr class="cs-hr" />
-          <nav id="folder-nav" aria-label="Mailbox folders"></nav>
-        </aside>
+        <fieldset class="cs-fieldset">
+          <legend>Inventory</legend>
+          <div id="component-inventory"></div>
+        </fieldset>
+      </aside>
 
-        <section class="message-list-pane pane-shell" id="ledger-pane">
-          <div class="pane-heading pane-heading--row">
-            <div>
-              <p class="pane-kicker">Inbox Ledger</p>
-              <h2 id="current-folder-title">Inbox</h2>
-            </div>
-            <p class="pane-meta" id="message-count">0 dispatches</p>
+      <section class="gallery-main">
+        <section class="gallery-section" id="core-controls">
+          <div class="gallery-section__heading">
+            <p class="gallery-kicker">Core Controls</p>
+            <h2>Input + Selection Primitives</h2>
           </div>
           <hr class="cs-hr" />
-          <div id="message-list" class="message-list" tabindex="0"></div>
+          <div class="gallery-grid" id="core-grid"></div>
         </section>
 
-        <section class="reading-pane pane-shell" id="reader-pane-shell">
-          <div class="pane-heading">
-            <p class="pane-kicker">Reading Pane</p>
-            <h2>Message Viewer</h2>
+        <section class="gallery-section" id="layout-navigation">
+          <div class="gallery-section__heading">
+            <p class="gallery-kicker">Navigation + Layout</p>
+            <h2>Structural Components</h2>
           </div>
           <hr class="cs-hr" />
-          <div id="reading-pane" class="reading-pane-content" tabindex="0"></div>
+          <div class="gallery-grid" id="layout-grid"></div>
         </section>
-      </div>
 
-      <section class="pane-shell showcase-dialogs" id="dialog-showcase">
-        <div class="pane-heading pane-heading--row">
-          <div>
-            <p class="pane-kicker">Dialogs + Popovers</p>
-            <h2>Interactive Overlays</h2>
+        <section class="gallery-section" id="overlay-disclosure">
+          <div class="gallery-section__heading">
+            <p class="gallery-kicker">Overlay + Disclosure</p>
+            <h2>Dialogs, Popovers, Menus, Tooltips</h2>
           </div>
-          <p class="pane-meta">Native dialog / popover mounts</p>
-        </div>
-        <hr class="cs-hr" />
-        <div class="showcase-dialogs__actions">
-          <button class="cs-btn" id="compose-preview-btn" type="button">Open Compose</button>
-          <button
-            class="cs-btn"
-            id="quick-actions-preview"
-            type="button"
-            popovertarget="quick-actions-popover"
-          >
-            Open Quick Actions
-          </button>
-          <button
-            class="cs-btn"
-            id="template-preview"
-            type="button"
-            popovertarget="compose-template-popover"
-          >
-            Open Templates
-          </button>
-        </div>
-      </section>
+          <hr class="cs-hr" />
+          <div class="gallery-grid" id="overlay-grid"></div>
+        </section>
 
-      <section class="modern-showcase" id="modern-showcase"></section>
+        <section class="gallery-section" id="feedback-display">
+          <div class="gallery-section__heading">
+            <p class="gallery-kicker">Feedback + Display</p>
+            <h2>Status, Tables, Loading, Messaging</h2>
+          </div>
+          <hr class="cs-hr" />
+          <div class="gallery-grid" id="feedback-grid"></div>
+        </section>
+      </section>
     </main>
 
-    <div class="command-dock-shell" id="command-dock-shell">
-      <div id="command-dock"></div>
-    </div>
-
-    <dialog class="cs-dialog cs-morph-dialog compose-dialog" id="compose-dialog">
+    <dialog class="cs-dialog" id="showcase-dialog">
       <form method="dialog">
         <div class="heading">
           <div class="wrapper">
             <div class="icon"></div>
-            <p class="text">New Message Command Console</p>
+            <p class="text">Showcase Dialog</p>
           </div>
-          <button class="cs-btn close" type="button" data-close-dialog="compose-dialog"></button>
+          <button class="cs-btn close" type="button" data-close-dialog="showcase-dialog"></button>
         </div>
-
         <div class="content">
-          <div class="compose-grid">
-            <div class="field-group">
-              <label class="cs-input__label" for="compose-to">To:</label>
-              <input type="text" class="cs-input" id="compose-to" />
-            </div>
-            <div class="field-group">
-              <label class="cs-input__label" for="compose-subject">Subject:</label>
-              <input type="text" class="cs-input" id="compose-subject" />
-            </div>
-            <div class="field-group field-group--full">
-              <div class="field-group__label-row">
-                <label class="cs-input__label" for="compose-body">Body:</label>
-                <button
-                  type="button"
-                  class="cs-btn"
-                  id="compose-template-trigger"
-                  popovertarget="compose-template-popover"
-                >
-                  Templates
-                </button>
-              </div>
-              <textarea
-                id="compose-body"
-                class="cs-input compose-body"
-                placeholder="Transmit message payload..."
-              ></textarea>
-            </div>
+          <p class="dialog-copy">
+            This dialog is intentionally built from the stock cs16.css dialog
+            structure.
+          </p>
+          <div class="dialog-field-grid">
+            <label>
+              <span class="cs-input__label">Name</span>
+              <input class="cs-input" type="text" value="Operator" />
+            </label>
+            <label>
+              <span class="cs-input__label">Role</span>
+              <input class="cs-input" type="text" value="Observer" />
+            </label>
           </div>
         </div>
-
         <menu class="footer-btns">
-          <button type="button" class="cs-btn" id="compose-send">Send</button>
-          <button type="button" class="cs-btn compose-discard" data-close-dialog="compose-dialog">
-            Discard
-          </button>
+          <button class="cs-btn" type="button" data-close-dialog="showcase-dialog">Close</button>
         </menu>
       </form>
     </dialog>
 
-    <div class="cs-morph-popover quick-actions-popover" id="quick-actions-popover" popover>
-      <p class="popover-title">Field Actions</p>
-      <div class="popover-actions">
-        <button class="cs-btn" type="button" data-quick-action="priority">Focus Priority</button>
-        <button class="cs-btn" type="button" data-quick-action="compose">Compose</button>
-        <button class="cs-btn" type="button" data-quick-action="reader">Open Reader</button>
+    <div class="gallery-popover" id="showcase-popover" popover>
+      <div class="gallery-popover__inner">
+        <p class="gallery-popover__title">Popover</p>
+        <p class="gallery-popover__copy">
+          Anchored help text using native popover behavior with cs16 surface treatment.
+        </p>
       </div>
     </div>
 
-    <div class="cs-morph-popover quick-actions-popover" id="compose-template-popover" popover>
-      <p class="popover-title">Insert Template</p>
-      <div class="popover-actions">
-        <button class="cs-btn" type="button" data-template="Status green. Proceeding with deployment window.">
-          Green Status
-        </button>
-        <button class="cs-btn" type="button" data-template="Need approval on the enclosed payload before 1800 hours.">
-          Approval Request
-        </button>
-        <button class="cs-btn" type="button" data-template="Attachment secured. Download link follows in the next relay burst.">
-          Attachment Relay
-        </button>
-      </div>
-    </div>
-
-    <div class="transmission-progress" id="transmission-progress" hidden>
-      <div class="transmission-progress__head">
-        <span id="transmission-label">TRANSMITTING PAYLOAD</span>
-        <span id="transmission-stat">0%</span>
-      </div>
-      <div class="cs-progress-bar">
-        <div class="bars" id="progress-bars" style="width: 0%;"></div>
-      </div>
-    </div>
+    <div class="gallery-toast-stack" id="toast-stack" aria-live="polite"></div>
 
     <script type="module" src="./src/mail-app.js"></script>
   </body>
