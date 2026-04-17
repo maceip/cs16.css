@@ -555,6 +555,11 @@
   gap: 6px;
 }
 
+.showcase-toast-stack__items {
+  display: grid;
+  gap: 6px;
+}
+
 .demo-toolbar {
   display: flex;
   flex-wrap: wrap;
@@ -707,6 +712,11 @@
 }
 
 .motion-sliding-number {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.motion-sliding-number__slots {
   display: inline-flex;
   gap: 2px;
 }

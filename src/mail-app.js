@@ -550,16 +550,19 @@ function renderSlidingNumberCard() {
       div(
         { class: "motion-sliding-number component-card__surface component-card__surface--dark" },
         () =>
-          pageState.slidingNumberValue.val.split("").map((digit) =>
-            div(
-              { class: "motion-sliding-number__slot" },
+          div(
+            { class: "motion-sliding-number__slots" },
+            ...pageState.slidingNumberValue.val.split("").map((digit) =>
               div(
-                {
-                  class: "motion-sliding-number__track",
-                  style: `transform: translateY(-${Number(digit) * 10}%);`,
-                },
-                Array.from({ length: 10 }, (_, index) =>
-                  span({ class: "motion-sliding-number__digit" }, `${index}`)
+                { class: "motion-sliding-number__slot" },
+                div(
+                  {
+                    class: "motion-sliding-number__track",
+                    style: `transform: translateY(-${Number(digit) * 10}%);`,
+                  },
+                  ...Array.from({ length: 10 }, (_, index) =>
+                    span({ class: "motion-sliding-number__digit" }, `${index}`)
+                  )
                 )
               )
             )
@@ -1690,18 +1693,21 @@ function renderToastCard() {
       div(
         { class: "showcase-toast-stack" },
         () =>
-          pageState.toasts.val.map((toast) =>
-            div(
-              { class: "showcase-toast" },
-              strong(null, toast.title),
-              p(null, toast.text),
-              button(
-                {
-                  class: "cs-btn",
-                  type: "button",
-                  onclick: () => dismissToast(toast.id),
-                },
-                "Dismiss"
+          div(
+            { class: "showcase-toast-stack__items" },
+            ...pageState.toasts.val.map((toast) =>
+              div(
+                { class: "showcase-toast" },
+                strong(null, toast.title),
+                p(null, toast.text),
+                button(
+                  {
+                    class: "cs-btn",
+                    type: "button",
+                    onclick: () => dismissToast(toast.id),
+                  },
+                  "Dismiss"
+                )
               )
             )
           )
