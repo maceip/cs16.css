@@ -25,6 +25,7 @@ const {
   section,
   select,
   span,
+  strong,
   table,
   tbody,
   td,
