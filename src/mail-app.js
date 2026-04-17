@@ -102,6 +102,18 @@ const cossGroups = [
     title: "Data / Feedback",
     components: ["calendar", "command", "meter", "progress", "table"],
   },
+  {
+    id: "motion",
+    title: "Motion Inspired",
+    components: [
+      "carousel",
+      "infinite-slider",
+      "text-scramble",
+      "text-shimmer",
+      "animated-number",
+      "sliding-number",
+    ],
+  },
 ];
 
 const componentDescriptions = {
@@ -158,6 +170,12 @@ const componentDescriptions = {
   toggle: "Single pressed state control.",
   toolbar: "Tool row grouping small actions.",
   tooltip: "Inline hover hint using stock cs-tooltip.",
+  carousel: "Paged slider with previous/next navigation and position indicators.",
+  "infinite-slider": "Continuous marquee-style track with duplicated content.",
+  "text-scramble": "Cryptographic text reveal that resolves from random characters.",
+  "text-shimmer": "Moving light sweep across fixed text.",
+  "animated-number": "Smoothly interpolated numeric readout.",
+  "sliding-number": "Per-digit rolling display for changing values.",
 };
 
 const pageState = {
@@ -185,6 +203,10 @@ const pageState = {
   comboboxValue: van.state("alpha"),
   selectedSelect: van.state("alpha"),
   pageNumber: van.state(2),
+  carouselIndex: van.state(0),
+  animatedNumberValue: van.state(1280),
+  animatedNumberDisplay: van.state(1280),
+  slidingNumberValue: van.state("042"),
   toasts: van.state([
     { id: "toast-1", title: "System", text: "UI showcase initialized." },
   ]),
@@ -207,6 +229,27 @@ const commandEntries = [
   "Open transport",
 ];
 
+const carouselSlides = [
+  { title: "Slide 1", text: "Upstream cs16 colors and button elevation." },
+  { title: "Slide 2", text: "Van.js-only interaction model, no React runtime." },
+  { title: "Slide 3", text: "Paged navigation with stock framed controls." },
+];
+
+const infiniteSliderItems = [
+  "ATTESTATION",
+  "SEALING",
+  "QUOTE",
+  "PCR0",
+  "TCB",
+  "GATED_KMS",
+];
+
+const textScramblePhrases = [
+  "Generating the interface...",
+  "Verifying the command channel...",
+  "Sealing runtime payload...",
+];
+
 function addToast(titleText, textValue) {
   pageState.toasts.val = [
     ...pageState.toasts.val,
@@ -216,6 +259,76 @@ function addToast(titleText, textValue) {
 
 function dismissToast(id) {
   pageState.toasts.val = pageState.toasts.val.filter((toast) => toast.id !== id);
+}
+
+class TextScrambleAnimator {
+  constructor(element, phrases) {
+    this.element = element;
+    this.phrases = phrases;
+    this.index = 0;
+    this.frame = 0;
+    this.raf = 0;
+    this.characterSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  }
+
+  next() {
+    this.index = (this.index + 1) % this.phrases.length;
+    this.scrambleTo(this.phrases[this.index]);
+  }
+
+  scrambleTo(target) {
+    cancelAnimationFrame(this.raf);
+    const length = target.length;
+    const totalFrames = 24;
+
+    const tick = () => {
+      const progress = Math.min(1, this.frame / totalFrames);
+      const revealCount = Math.floor(length * progress);
+      const scrambled = target
+        .split("")
+        .map((char, index) => {
+          if (char === " ") return " ";
+          if (index < revealCount) return target[index];
+          return this.characterSet[(index + this.frame) % this.characterSet.length];
+        })
+        .join("");
+
+      this.element.textContent = scrambled;
+
+      if (progress < 1) {
+        this.frame += 1;
+        this.raf = requestAnimationFrame(tick);
+      } else {
+        this.element.textContent = target;
+        this.frame = 0;
+      }
+    };
+
+    tick();
+  }
+}
+
+let animatedNumberRaf = 0;
+
+function animateNumberTo(target) {
+  cancelAnimationFrame(animatedNumberRaf);
+  const start = pageState.animatedNumberDisplay.val;
+  const startTime = performance.now();
+  const duration = 420;
+
+  const tick = (now) => {
+    const progress = Math.min(1, (now - startTime) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    pageState.animatedNumberDisplay.val = Math.round(
+      start + (target - start) * eased
+    );
+
+    if (progress < 1) {
+      animatedNumberRaf = requestAnimationFrame(tick);
+    }
+  };
+
+  animatedNumberRaf = requestAnimationFrame(tick);
 }
 
 function renderAccordionCard() {
@@ -257,6 +370,208 @@ function renderAccordionCard() {
             pageState.accordionOpen.val === item.id
               ? div({ class: "showcase-disclosure__panel" }, item.body)
               : null
+        )
+      )
+    )
+  );
+}
+
+function renderCarouselCard() {
+  return article(
+    { class: "showcase-card", id: "component-carousel" },
+    h3(null, "carousel"),
+    p({ class: "showcase-card__copy" }, componentDescriptions.carousel),
+    div(
+      { class: "motion-carousel" },
+      button(
+        {
+          class: "cs-btn",
+          type: "button",
+          onclick: () => {
+            pageState.carouselIndex.val =
+              (pageState.carouselIndex.val - 1 + carouselSlides.length) %
+              carouselSlides.length;
+          },
+        },
+        "<"
+      ),
+      div(
+        { class: "motion-carousel__viewport" },
+        div(
+          {
+            class: "motion-carousel__track",
+            style: () =>
+              `transform: translateX(-${pageState.carouselIndex.val * 100}%);`,
+          },
+          ...carouselSlides.map((slide) =>
+            div(
+              { class: "motion-carousel__slide component-card__surface" },
+              strong(null, slide.title),
+              p(null, slide.text)
+            )
+          )
+        )
+      ),
+      button(
+        {
+          class: "cs-btn",
+          type: "button",
+          onclick: () => {
+            pageState.carouselIndex.val =
+              (pageState.carouselIndex.val + 1) % carouselSlides.length;
+          },
+        },
+        ">"
+      )
+    ),
+    div(
+      { class: "motion-carousel__dots" },
+      carouselSlides.map((_, index) =>
+        button(
+          {
+            class: () =>
+              `cs-btn motion-carousel__dot ${
+                pageState.carouselIndex.val === index ? "is-active" : ""
+              }`,
+            type: "button",
+            onclick: () => {
+              pageState.carouselIndex.val = index;
+            },
+          },
+          `${index + 1}`
+        )
+      )
+    )
+  );
+}
+
+function renderInfiniteSliderCard() {
+  const items = [...infiniteSliderItems, ...infiniteSliderItems];
+  return article(
+    { class: "showcase-card", id: "component-infinite-slider" },
+    h3(null, "infinite-slider"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["infinite-slider"]),
+    div(
+      { class: "motion-marquee component-card__surface" },
+      div(
+        { class: "motion-marquee__track" },
+        items.map((item) => span({ class: "motion-marquee__item" }, item))
+      )
+    )
+  );
+}
+
+function renderTextScrambleCard() {
+  return article(
+    { class: "showcase-card", id: "component-text-scramble" },
+    h3(null, "text-scramble"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["text-scramble"]),
+    div(
+      { class: "showcase-stack" },
+      div(
+        {
+          class: "motion-text-scramble component-card__surface component-card__surface--dark",
+          id: "motion-text-scramble",
+          tabindex: "0",
+          "aria-live": "polite",
+        },
+        textScramblePhrases[0]
+      ),
+      button(
+        {
+          class: "cs-btn",
+          id: "motion-text-scramble-trigger",
+          type: "button",
+        },
+        "Scramble"
+      )
+    )
+  );
+}
+
+function renderTextShimmerCard() {
+  return article(
+    { class: "showcase-card", id: "component-text-shimmer" },
+    h3(null, "text-shimmer"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["text-shimmer"]),
+    div(
+      { class: "motion-text-shimmer component-card__surface component-card__surface--dark" },
+      "Generating code..."
+    )
+  );
+}
+
+function renderAnimatedNumberCard() {
+  const presets = [0, 1280, 4096];
+  return article(
+    { class: "showcase-card", id: "component-animated-number" },
+    h3(null, "animated-number"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["animated-number"]),
+    div(
+      { class: "showcase-stack" },
+      div(
+        { class: "motion-animated-number component-card__surface component-card__surface--dark" },
+        () => pageState.animatedNumberDisplay.val.toLocaleString("en-US")
+      ),
+      div(
+        { class: "component-card__row" },
+        presets.map((value) =>
+          button(
+            {
+              class: "cs-btn",
+              type: "button",
+              onclick: () => {
+                pageState.animatedNumberValue.val = value;
+                animateNumberTo(value);
+              },
+            },
+            value.toLocaleString("en-US")
+          )
+        )
+      )
+    )
+  );
+}
+
+function renderSlidingNumberCard() {
+  const presets = ["007", "128", "512"];
+  return article(
+    { class: "showcase-card", id: "component-sliding-number" },
+    h3(null, "sliding-number"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["sliding-number"]),
+    div(
+      { class: "showcase-stack" },
+      div(
+        { class: "motion-sliding-number component-card__surface component-card__surface--dark" },
+        () =>
+          pageState.slidingNumberValue.val.split("").map((digit) =>
+            div(
+              { class: "motion-sliding-number__slot" },
+              div(
+                {
+                  class: "motion-sliding-number__track",
+                  style: `transform: translateY(-${Number(digit) * 10}%);`,
+                },
+                Array.from({ length: 10 }, (_, index) =>
+                  span({ class: "motion-sliding-number__digit" }, `${index}`)
+                )
+              )
+            )
+          )
+      ),
+      div(
+        { class: "component-card__row" },
+        presets.map((value) =>
+          button(
+            {
+              class: "cs-btn",
+              type: "button",
+              onclick: () => {
+                pageState.slidingNumberValue.val = value;
+              },
+            },
+            value
+          )
         )
       )
     )
@@ -1492,6 +1807,7 @@ const renderers = {
   collapsible: renderCollapsibleCard,
   combobox: renderComboboxCard,
   command: renderCommandCard,
+  carousel: renderCarouselCard,
   dialog: renderDialogCard,
   drawer: renderDrawerCard,
   empty: renderEmptyCard,
@@ -1520,16 +1836,21 @@ const renderers = {
   sidebar: renderSidebarCard,
   skeleton: renderSkeletonCard,
   slider: renderSliderCard,
+  "sliding-number": renderSlidingNumberCard,
   spinner: renderSpinnerCard,
   switch: renderSwitchCard,
   table: renderTableCard,
   tabs: renderTabsCard,
   textarea: renderTextareaCard,
+  "text-scramble": renderTextScrambleCard,
+  "text-shimmer": renderTextShimmerCard,
   toast: renderToastCard,
   "toggle-group": renderToggleGroupCard,
   toggle: renderToggleCard,
   toolbar: renderToolbarCard,
   tooltip: renderTooltipCard,
+  "animated-number": renderAnimatedNumberCard,
+  "infinite-slider": renderInfiniteSliderCard,
 };
 
 function renderGroup(group) {
@@ -1604,6 +1925,14 @@ function mountGallery() {
       )
     )
   );
+
+  const scrambleDisplay = document.getElementById("motion-text-scramble");
+  const scrambleTrigger = document.getElementById("motion-text-scramble-trigger");
+
+  if (scrambleDisplay && scrambleTrigger) {
+    const animator = new TextScrambleAnimator(scrambleDisplay, textScramblePhrases);
+    scrambleTrigger.addEventListener("click", () => animator.next());
+  }
 }
 
 document.addEventListener("DOMContentLoaded", mountGallery);
