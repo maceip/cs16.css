@@ -120,6 +120,11 @@ const cossGroups = [
       "sliding-number",
     ],
   },
+  {
+    id: "developer",
+    title: "Developer Surface",
+    components: ["code-line", "repo-card", "commit-graph", "file-tree"],
+  },
 ];
 
 const componentDescriptions = {
@@ -182,6 +187,10 @@ const componentDescriptions = {
   "text-shimmer": "Moving light sweep across fixed text.",
   "animated-number": "Smoothly interpolated numeric readout.",
   "sliding-number": "Per-digit rolling display for changing values.",
+  "code-line": "Compact single-line code snippet with inline copy action.",
+  "repo-card": "Repository summary card with language, stars, forks, and topic tags.",
+  "commit-graph": "Topological commit rail with branching and merge ancestry.",
+  "file-tree": "Collapsible project tree with file and folder hierarchy.",
 };
 
 const pageState = {
@@ -217,6 +226,7 @@ const pageState = {
     { id: "toast-1", title: "System", text: "UI showcase initialized." },
   ]),
   sidebarCollapsed: van.state(false),
+  fileTreeExpanded: van.state(["src", "src/components", "src/lib"]),
 };
 
 const autocompleteOptions = [
@@ -239,6 +249,82 @@ const carouselSlides = [
   { title: "Slide 1", text: "Upstream cs16 colors and button elevation." },
   { title: "Slide 2", text: "Van.js-only interaction model, no React runtime." },
   { title: "Slide 3", text: "Paged navigation with stock framed controls." },
+];
+
+const repoCardData = {
+  owner: "jal-co",
+  repo: "ui",
+  description: "A curated set of high-quality UI components for modern app shells.",
+  language: "TypeScript",
+  stars: 1248,
+  forks: 84,
+  license: "MIT",
+  topics: ["ui", "components", "design-system", "accessibility"],
+  updated: "updated 2d ago",
+};
+
+const commitGraphData = [
+  {
+    hash: "c80f097",
+    message: "Clarify attestation showcase modules",
+    author: "agent",
+    date: "2026-04-17",
+    lane: 1,
+    refs: ["main"],
+  },
+  {
+    hash: "48752e5",
+    message: "Add motion-inspired Van.js showcase demos",
+    author: "agent",
+    date: "2026-04-17",
+    lane: 1,
+  },
+  {
+    hash: "225a905",
+    message: "Rebuild showcase from cs16 baseline",
+    author: "agent",
+    date: "2026-04-17",
+    lane: 0,
+    refs: ["reset"],
+  },
+  {
+    hash: "4fd841e",
+    message: "Fix Van gallery runtime mount issues",
+    author: "agent",
+    date: "2026-04-17",
+    lane: 0,
+    refs: ["fixup"],
+  },
+  {
+    hash: "4081219",
+    message: "Fix rendered gallery card output",
+    author: "agent",
+    date: "2026-04-17",
+    lane: 0,
+  },
+];
+
+const fileTreeData = [
+  {
+    name: "src",
+    children: [
+      {
+        name: "components",
+        children: [
+          { name: "accordion.ts" },
+          { name: "dialog.ts" },
+          { name: "tooltip.ts" },
+        ],
+      },
+      {
+        name: "lib",
+        children: [{ name: "tokens.ts" }, { name: "helpers.ts" }],
+      },
+      { name: "index.ts" },
+    ],
+  },
+  { name: "package.json" },
+  { name: "README.md" },
 ];
 
 const infiniteSliderItems = [
@@ -463,6 +549,203 @@ function renderInfiniteSliderCard() {
         { class: "motion-marquee__track" },
         items.map((item) => span({ class: "motion-marquee__item" }, item))
       )
+    )
+  );
+}
+
+function renderCodeLineCard() {
+  return article(
+    { class: "showcase-card", id: "component-code-line" },
+    h3(null, "code-line"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["code-line"]),
+    div(
+      { class: "dev-code-line" },
+      span({ class: "dev-code-line__label" }, "TS"),
+      code({ class: "dev-code-line__code" }, `import { Button } from "@/components/ui/button"`),
+      button(
+        {
+          class: "cs-btn dev-code-line__copy",
+          type: "button",
+          onclick: async () => {
+            try {
+              await navigator.clipboard.writeText(`import { Button } from "@/components/ui/button"`);
+              addToast("Code", "Code line copied.");
+            } catch {
+              addToast("Code", "Clipboard unavailable.");
+            }
+          },
+        },
+        "Copy"
+      )
+    )
+  );
+}
+
+function renderRepoCard() {
+  const data = pageState.repoCard.val;
+  const languageColor = data.language === "TypeScript" ? "var(--accent)" : "var(--secondary-accent)";
+  return article(
+    { class: "showcase-card", id: "component-repo-card" },
+    h3(null, "repo-card"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["repo-card"]),
+    div(
+      { class: "dev-repo-card" },
+      div(
+        { class: "dev-repo-card__head" },
+        div(
+          null,
+          strong(null, `${data.owner}/${data.repo}`),
+          p({ class: "showcase-card__meta" }, data.description)
+        ),
+        span({ class: "dev-repo-card__badge" }, data.license)
+      ),
+      div(
+        { class: "dev-repo-card__meta" },
+        span(
+          { class: "dev-repo-card__lang" },
+          span({ class: "dev-repo-card__lang-dot", style: `background:${languageColor}` }),
+          data.language
+        ),
+        span(null, `★ ${data.stars}`),
+        span(null, `Forks ${data.forks}`),
+        span(null, `Updated ${data.updated}`)
+      ),
+      div(
+        { class: "dev-repo-card__topics" },
+        data.topics.map((topic) => span({ class: "dev-topic" }, topic))
+      )
+    )
+  );
+}
+
+function renderCommitGraph() {
+  const commits = pageState.commitGraph.val;
+  return article(
+    { class: "showcase-card showcase-card--wide", id: "component-commit-graph" },
+    h3(null, "commit-graph"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["commit-graph"]),
+    div(
+      { class: "dev-commit-graph" },
+      commits.map((commit, index) =>
+        div(
+          { class: "dev-commit-row" },
+          div(
+            { class: "dev-commit-rail" },
+            index < commits.length - 1 ? div({ class: "dev-commit-rail__line" }) : null,
+            div({
+              class: `dev-commit-rail__dot ${
+                pageState.activeCommitHash.val === commit.hash ? "is-active" : ""
+              }`,
+            })
+          ),
+          button(
+            {
+              class: "dev-commit-row__content",
+              type: "button",
+              onclick: () => {
+                pageState.activeCommitHash.val = commit.hash;
+              },
+            },
+            div(
+              { class: "dev-commit-row__summary" },
+              strong(null, commit.message),
+              span({ class: "showcase-card__meta" }, `${commit.author} • ${commit.date}`),
+              div(
+                { class: "dev-commit-row__refs" },
+                commit.refs.map((refValue) => span({ class: "dev-topic" }, refValue))
+              )
+            ),
+            span({ class: "dev-commit-row__hash" }, commit.hash.slice(0, 7))
+          )
+        )
+      ),
+      (() => {
+        const active =
+          commits.find((commit) => commit.hash === pageState.activeCommitHash.val) ?? commits[0];
+        return div(
+          { class: "dev-commit-detail component-card__surface" },
+          p({ class: "component-card__eyebrow" }, "Commit Detail"),
+          strong(null, active.message),
+          p({ class: "showcase-card__meta" }, `Author: ${active.author}`),
+          p({ class: "showcase-card__meta" }, `Parents: ${active.parents.join(", ") || "root"}`),
+          div(
+            { class: "dev-commit-detail__parents" },
+            active.refs.map((refValue) => span({ class: "dev-topic" }, refValue))
+          )
+        );
+      })()
+    )
+  );
+}
+
+function renderFileTreeNodes(nodes, pathPrefix = "") {
+  return ul(
+    { class: "dev-file-tree__list", role: pathPrefix ? "group" : "tree" },
+    nodes.map((node) => {
+      const pathValue = pathPrefix ? `${pathPrefix}/${node.name}` : node.name;
+      const isExpanded = pageState.expandedTreePaths.val.includes(pathValue);
+      const isFolder = Array.isArray(node.children);
+      const isHighlighted = pageState.highlightedPaths.val.includes(pathValue);
+
+      return li(
+        { class: "dev-file-tree__item", role: "treeitem", "aria-expanded": isFolder ? `${isExpanded}` : undefined },
+        div(
+          { class: `dev-file-tree__row ${isHighlighted ? "is-highlighted" : ""}` },
+          isFolder
+            ? button(
+                {
+                  class: "cs-btn dev-file-tree__toggle",
+                  type: "button",
+                  onclick: () => {
+                    const next = isExpanded
+                      ? pageState.expandedTreePaths.val.filter((value) => value !== pathValue)
+                      : [...pageState.expandedTreePaths.val, pathValue];
+                    pageState.expandedTreePaths.val = next;
+                  },
+                },
+                isExpanded ? "-" : "+"
+              )
+            : span({ class: "dev-file-tree__leaf" }, "•"),
+          span({ class: `dev-file-tree__icon ${isFolder ? "is-folder" : "is-file"}` }, isFolder ? "[D]" : "[F]"),
+          span(null, node.name)
+        ),
+        isFolder && isExpanded ? renderFileTreeNodes(node.children, pathValue) : null
+      );
+    })
+  );
+}
+
+function renderFileTreeCard() {
+  return article(
+    { class: "showcase-card", id: "component-file-tree" },
+    h3(null, "file-tree"),
+    p({ class: "showcase-card__copy" }, componentDescriptions["file-tree"]),
+    div(
+      { class: "component-card__row" },
+      button(
+        {
+          class: "cs-btn",
+          type: "button",
+          onclick: () => {
+            pageState.expandedTreePaths.val = ["src", "src/app", "src/components", "src/lib"];
+          },
+        },
+        "Expand"
+      ),
+      button(
+        {
+          class: "cs-btn",
+          type: "button",
+          onclick: () => {
+            pageState.expandedTreePaths.val = [];
+          },
+        },
+        "Collapse"
+      )
+    ),
+    div(
+      { class: "dev-file-tree component-card__surface" },
+      renderFileTreeNodes(pageState.fileTree.val)
     )
   );
 }
@@ -1825,6 +2108,7 @@ const renderers = {
   empty: renderEmptyCard,
   field: renderFieldCard,
   fieldset: renderFieldsetCard,
+  "file-tree": renderFileTreeCard,
   form: renderFormCard,
   frame: renderFrameCard,
   group: renderGroupCard,
@@ -1841,6 +2125,7 @@ const renderers = {
   "preview-card": renderPreviewCardCard,
   progress: renderProgressCard,
   "radio-group": renderRadioGroupCard,
+  "repo-card": renderRepoCardCard,
   "scroll-area": renderScrollAreaCard,
   select: renderSelectCard,
   separator: renderSeparatorCard,
@@ -1862,6 +2147,8 @@ const renderers = {
   toolbar: renderToolbarCard,
   tooltip: renderTooltipCard,
   "animated-number": renderAnimatedNumberCard,
+  "code-line": renderCodeLineCard,
+  "commit-graph": renderCommitGraphCard,
   "infinite-slider": renderInfiniteSliderCard,
 };
 
