@@ -226,7 +226,6 @@ const pageState = {
     { id: "toast-1", title: "System", text: "UI showcase initialized." },
   ]),
   sidebarCollapsed: van.state(false),
-  fileTreeExpanded: van.state(["src", "src/components", "src/lib"]),
 };
 
 const autocompleteOptions = [
@@ -270,6 +269,7 @@ const commitGraphData = [
     author: "agent",
     date: "2026-04-17",
     lane: 1,
+    parents: ["48752e5"],
     refs: ["main"],
   },
   {
@@ -278,6 +278,8 @@ const commitGraphData = [
     author: "agent",
     date: "2026-04-17",
     lane: 1,
+    parents: ["225a905"],
+    refs: [],
   },
   {
     hash: "225a905",
@@ -285,6 +287,7 @@ const commitGraphData = [
     author: "agent",
     date: "2026-04-17",
     lane: 0,
+    parents: [],
     refs: ["reset"],
   },
   {
@@ -293,6 +296,7 @@ const commitGraphData = [
     author: "agent",
     date: "2026-04-17",
     lane: 0,
+    parents: ["225a905"],
     refs: ["fixup"],
   },
   {
@@ -301,6 +305,8 @@ const commitGraphData = [
     author: "agent",
     date: "2026-04-17",
     lane: 0,
+    parents: ["4fd841e"],
+    refs: [],
   },
 ];
 
@@ -335,6 +341,16 @@ const infiniteSliderItems = [
   "TCB",
   "GATED_KMS",
 ];
+
+pageState.repoCard = van.state(repoCardData);
+pageState.commitGraph = van.state(commitGraphData);
+pageState.activeCommitHash = van.state(commitGraphData[0].hash);
+pageState.fileTree = van.state(fileTreeData);
+pageState.expandedTreePaths = van.state(["src", "src/components", "src/lib"]);
+pageState.highlightedPaths = van.state([
+  "src/components/repo-card.tsx",
+  "src/components/file-tree.tsx",
+]);
 
 const textScramblePhrases = [
   "Generating the interface...",
@@ -2125,7 +2141,7 @@ const renderers = {
   "preview-card": renderPreviewCardCard,
   progress: renderProgressCard,
   "radio-group": renderRadioGroupCard,
-  "repo-card": renderRepoCardCard,
+  "repo-card": renderRepoCard,
   "scroll-area": renderScrollAreaCard,
   select: renderSelectCard,
   separator: renderSeparatorCard,
@@ -2148,7 +2164,7 @@ const renderers = {
   tooltip: renderTooltipCard,
   "animated-number": renderAnimatedNumberCard,
   "code-line": renderCodeLineCard,
-  "commit-graph": renderCommitGraphCard,
+  "commit-graph": renderCommitGraph,
   "infinite-slider": renderInfiniteSliderCard,
 };
 
