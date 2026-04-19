@@ -123,6 +123,7 @@ const state = {
   carouselIndex: van.state(0),
   scrambleText: van.state("GENERATING THE INTERFACE..."),
   toasts: van.state([{ id: 1, text: "UI showcase initialized." }]),
+  expandedTreePaths: van.state(["src", "src/components"]),
 };
 
 const carouselSlides = [
@@ -899,21 +900,62 @@ function renderCommitGraph() {
   );
 }
 
-function renderFileTreeNode(node) {
-  if (!Array.isArray(node[1]) || node[1].length === 0) {
-    return li(null, span({ class: "liar-file-leaf" }, "•"), span(null, node[0]));
-  }
-  return li(
-    null,
-    strongLine(node[0]),
-    ul(
-      { class: "liar-file-tree" },
-      ...node[1].map((child) =>
-        Array.isArray(child) && child.length === 2
-          ? renderFileTreeNode(child)
-          : li(null, span({ class: "liar-file-leaf" }, "•"), span(null, child))
+function renderFileTreeNode(node, parentPath = "") {
+  const [name, children] = node;
+  const path = parentPath ? `${parentPath}/${name}` : name;
+  const isFolder = Array.isArray(children) && children.length > 0;
+  const isExpanded = state.expandedTreePaths.val.includes(path);
+
+  if (!isFolder) {
+    return li(
+      { class: "liar-file-tree__item" },
+      div(
+        { class: "liar-file-tree__row" },
+        span({ class: "liar-file-tree__leaf" }, "•"),
+        span({ class: "liar-file-tree__icon is-file" }, "[F]"),
+        span(null, name)
       )
-    )
+    );
+  }
+
+  return li(
+    { class: "liar-file-tree__item" },
+    div(
+      { class: "liar-file-tree__row" },
+      button(
+        {
+          class: "cs-btn liar-file-tree__toggle",
+          type: "button",
+          onclick: () => {
+            const next = isExpanded
+              ? state.expandedTreePaths.val.filter((value) => value !== path)
+              : [...state.expandedTreePaths.val, path];
+            state.expandedTreePaths.val = next;
+          },
+        },
+        isExpanded ? "-" : "+"
+      ),
+      span({ class: "liar-file-tree__icon is-folder" }, "[D]"),
+      span(null, name)
+    ),
+    isExpanded
+      ? ul(
+          { class: "liar-file-tree__list" },
+          ...children.map((child) =>
+            Array.isArray(child) && child.length === 2
+              ? renderFileTreeNode(child, path)
+              : li(
+                  { class: "liar-file-tree__item" },
+                  div(
+                    { class: "liar-file-tree__row" },
+                    span({ class: "liar-file-tree__leaf" }, "•"),
+                    span({ class: "liar-file-tree__icon is-file" }, "[F]"),
+                    span(null, child)
+                  )
+                )
+          )
+        )
+      : null
   );
 }
 
@@ -921,7 +963,33 @@ function renderFileTree() {
   return renderLine(
     "File Tree",
     "Collapsible project tree with file and folder hierarchy.",
-    ul({ class: "liar-file-tree" }, ...fileTreeData.map((node) => renderFileTreeNode(node)))
+    div(
+      { class: "liar-stack" },
+      div(
+        { class: "liar-row" },
+        button(
+          {
+            class: "cs-btn",
+            type: "button",
+            onclick: () => {
+              state.expandedTreePaths.val = ["src", "src/components"];
+            },
+          },
+          "Expand"
+        ),
+        button(
+          {
+            class: "cs-btn",
+            type: "button",
+            onclick: () => {
+              state.expandedTreePaths.val = [];
+            },
+          },
+          "Collapse"
+        )
+      ),
+      ul({ class: "liar-file-tree" }, ...fileTreeData.map((node) => renderFileTreeNode(node)))
+    )
   );
 }
 

@@ -686,7 +686,7 @@
 
 .liar-file-tree__row {
   display: grid;
-  grid-template-columns: auto auto 1fr;
+  grid-template-columns: auto auto auto 1fr;
   gap: 6px;
   align-items: center;
 }
@@ -703,6 +703,10 @@
 .liar-file-tree__leaf {
   width: 24px;
   text-align: center;
+}
+
+.liar-file-tree__children[hidden] {
+  display: none;
 }
 
 .liar-file-tree__icon.is-folder {
@@ -791,30 +795,33 @@
   background-color: #292c21;
   border: 1px solid;
   border-color: #8c9284 #292c21 #292c21 #8c9284;
-  color: rgba(216, 222, 211, 0.45);
+  color: #6e7564;
   font-size: 18px;
   line-height: 18px;
   background-image: linear-gradient(
     90deg,
-    rgba(216, 222, 211, 0.2) 0%,
-    rgba(240, 241, 235, 0.9) 50%,
-    rgba(216, 222, 211, 0.2) 100%
+    rgba(110, 117, 100, 0) 0%,
+    rgba(110, 117, 100, 0.2) 18%,
+    rgba(240, 241, 235, 1) 48%,
+    rgba(196, 181, 80, 0.95) 52%,
+    rgba(110, 117, 100, 0.2) 82%,
+    rgba(110, 117, 100, 0) 100%
   );
-  background-size: 180px 100%;
+  background-size: 260px 100%;
   background-repeat: no-repeat;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  animation: liar-shimmer 2.4s linear infinite;
+  animation: liar-shimmer 1.6s linear infinite;
 }
 
 @keyframes liar-shimmer {
   from {
-    background-position: -180px 0;
+    background-position: -260px 0;
   }
 
   to {
-    background-position: calc(100% + 180px) 0;
+    background-position: calc(100% + 260px) 0;
   }
 }
 
