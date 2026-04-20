@@ -720,10 +720,10 @@ index 0000000..fcb82ee
 +};
 diff --git a/clients/web/src/components/cs16/developer.jsx b/clients/web/src/components/cs16/developer.jsx
 new file mode 100644
-index 0000000..77a3ae4
+index 0000000..fec9d0c
 --- /dev/null
 +++ b/clients/web/src/components/cs16/developer.jsx
-@@ -0,0 +1,859 @@
+@@ -0,0 +1,877 @@
 +/*
 + * cs16 developer-surface components.
 + * Ported from the cs16.css showcase and adapted to BountyNet's frost palette.
@@ -1131,6 +1131,7 @@ index 0000000..77a3ae4
 +                'bn-commit-graph__rail',
 +                isFirst && 'is-first',
 +                isLast && 'is-last',
++                typeof commit.lane === 'number' && `is-lane-${commit.lane}`,
 +              )}
 +              aria-hidden="true"
 +            >
@@ -1155,6 +1156,13 @@ index 0000000..77a3ae4
 +              </div>
 +              <p className="bn-commit-graph__message">{commit.message}</p>
 +              <p className="bn-commit-graph__meta">
++                {commit.avatarSrc ? (
++                  <img
++                    src={commit.avatarSrc}
++                    alt=""
++                    className="bn-commit-graph__avatar"
++                  />
++                ) : null}
 +                <span className="bn-commit-graph__author">{commit.author}</span>
 +                <span className="bn-commit-graph__sep">·</span>
 +                <span>committed {commit.date}</span>
@@ -1284,6 +1292,16 @@ index 0000000..77a3ae4
 +        }
 +        .bn-commit-graph__author { color: var(--bn-text-1); }
 +        .bn-commit-graph__sep { color: var(--bn-text-3); }
++        .bn-commit-graph__avatar {
++          width: 14px;
++          height: 14px;
++          border-radius: 50%;
++          border: 1px solid var(--bn-border-dark);
++          object-fit: cover;
++        }
++        .bn-commit-graph__rail.is-lane-1 .bn-commit-graph__dot { border-color: var(--bn-green); }
++        .bn-commit-graph__rail.is-lane-2 .bn-commit-graph__dot { border-color: var(--bn-yellow); }
++        .bn-commit-graph__rail.is-lane-3 .bn-commit-graph__dot { border-color: var(--bn-purple); }
 +      `}</style>
 +    </div>
 +  );
@@ -1585,10 +1603,10 @@ index 0000000..77a3ae4
 +  nodes.filter((node) => Array.isArray(node.children)).map((node) => node.name);
 diff --git a/clients/web/src/components/cs16/icons.jsx b/clients/web/src/components/cs16/icons.jsx
 new file mode 100644
-index 0000000..f043bbc
+index 0000000..d3edf66
 --- /dev/null
 +++ b/clients/web/src/components/cs16/icons.jsx
-@@ -0,0 +1,200 @@
+@@ -0,0 +1,282 @@
 +/*
 + * cs16 icon set — pixel-friendly SVGs that share a single 14x14 visual
 + * rhythm. Every icon uses `fill="currentColor"` / `stroke="currentColor"`
@@ -1765,6 +1783,88 @@ index 0000000..f043bbc
 +        strokeWidth="1.2"
 +      />
 +    </>
++  ),
++  diff: (
++    <path
++      d="M7 1 v4 M5 3 h4 M5 11 h4 M3 9 h8 M1 13 h12"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="1.3"
++    />
++  ),
++  pr: (
++    <>
++      <circle cx="3.5" cy="3" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
++      <circle cx="3.5" cy="11" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
++      <circle cx="10.5" cy="11" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
++      <path
++        d="M3.5 4.5 v5 M10.5 9.5 v-4 a2 2 0 0 0 -2 -2 h-2 M6.5 1.5 l-1.5 1 l1.5 1"
++        fill="none"
++        stroke="currentColor"
++        strokeWidth="1.2"
++      />
++    </>
++  ),
++  merge: (
++    <>
++      <circle cx="3.5" cy="3" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
++      <circle cx="3.5" cy="11" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
++      <circle cx="10.5" cy="8" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
++      <path
++        d="M3.5 4.5 v5 M3.5 5 c0 3 7 2 7 3"
++        fill="none"
++        stroke="currentColor"
++        strokeWidth="1.2"
++      />
++    </>
++  ),
++  users: (
++    <path
++      d="M5 4 a2 2 0 1 0 0 -0.01 z M10 5 a1.5 1.5 0 1 0 0 -0.01 z M1 12 c0 -2 2 -3 4 -3 s4 1 4 3 M9 12 c0 -1.5 1.5 -2.5 3 -2.5 s2 1 2 2.5"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="1.2"
++    />
++  ),
++  user: (
++    <path
++      d="M7 3 a2.2 2.2 0 1 0 0 -0.01 z M2 12 c0 -2.5 2.5 -4 5 -4 s5 1.5 5 4"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="1.2"
++    />
++  ),
++  attach: (
++    <path
++      d="M11 3 l-6 6 a2 2 0 0 0 3 3 l6 -6 a3 3 0 0 0 -4 -4 l-6 6 a4 4 0 0 0 5 5 l5 -5"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="1.2"
++    />
++  ),
++  send: (
++    <path
++      d="M1 1 L13 7 L1 13 L3 7 Z M3 7 h6"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="1.2"
++      strokeLinejoin="miter"
++    />
++  ),
++  sparkle: (
++    <path
++      d="M7 1 l1.3 3.7 l3.7 1.3 l-3.7 1.3 l-1.3 3.7 l-1.3 -3.7 l-3.7 -1.3 l3.7 -1.3 z M12 11 l0.6 1.4 l1.4 0.6 l-1.4 0.6 l-0.6 1.4 l-0.6 -1.4 l-1.4 -0.6 l1.4 -0.6 z"
++      fill="currentColor"
++    />
++  ),
++  stop: <rect x="3" y="3" width="8" height="8" fill="currentColor" />,
++  regen: (
++    <path
++      d="M12 7 a5 5 0 1 1 -1.5 -3.5 M12 1 v3 h-3"
++      fill="none"
++      stroke="currentColor"
++      strokeWidth="1.3"
++    />
 +  ),
 +};
 +
@@ -3198,10 +3298,10 @@ index 0000000..b56381b
 +};
 diff --git a/clients/web/src/components/cs16/tokens.css b/clients/web/src/components/cs16/tokens.css
 new file mode 100644
-index 0000000..e77eb51
+index 0000000..aaa7527
 --- /dev/null
 +++ b/clients/web/src/components/cs16/tokens.css
-@@ -0,0 +1,541 @@
+@@ -0,0 +1,560 @@
 +/*
 + * cs16 design kit — CS16-inspired structural language layered onto the
 + * BountyNet frost palette. Beveled borders, chunky buttons, legend-framed
@@ -3742,6 +3842,25 @@ index 0000000..e77eb51
 +.bn-scrollarea::-webkit-scrollbar-thumb {
 +  background-color: var(--bn-surface-3);
 +  border: 2px solid var(--bn-surface);
++}
++
++/* -------------------------------------------------------------------------
++ * Diff tokens — GitHub-canonical diff coloring sat over the frost palette.
++ * Used by DiffViewer, FileDiffCard, and any +/- gutters.
++ * ---------------------------------------------------------------------- */
++:root {
++  --bn-diff-add-bg: hsl(140 55% 18%);
++  --bn-diff-add-fg: hsl(140 60% 70%);
++  --bn-diff-add-gutter: hsl(140 45% 26%);
++
++  --bn-diff-del-bg: hsl(0 50% 20%);
++  --bn-diff-del-fg: hsl(0 60% 75%);
++  --bn-diff-del-gutter: hsl(0 45% 30%);
++
++  --bn-diff-context-bg: hsl(213 16% 12%);
++  --bn-diff-context-fg: hsl(213 18% 78%);
++
++  --bn-diff-meta-fg: hsl(213 14% 55%);
 +}
 diff --git a/clients/web/src/components/smui/index.jsx b/clients/web/src/components/smui/index.jsx
 index bfbc78b..f8e89b3 100644

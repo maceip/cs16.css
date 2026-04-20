@@ -405,6 +405,7 @@ export const CommitGraph = ({
                 'bn-commit-graph__rail',
                 isFirst && 'is-first',
                 isLast && 'is-last',
+                typeof commit.lane === 'number' && `is-lane-${commit.lane}`,
               )}
               aria-hidden="true"
             >
@@ -429,6 +430,13 @@ export const CommitGraph = ({
               </div>
               <p className="bn-commit-graph__message">{commit.message}</p>
               <p className="bn-commit-graph__meta">
+                {commit.avatarSrc ? (
+                  <img
+                    src={commit.avatarSrc}
+                    alt=""
+                    className="bn-commit-graph__avatar"
+                  />
+                ) : null}
                 <span className="bn-commit-graph__author">{commit.author}</span>
                 <span className="bn-commit-graph__sep">·</span>
                 <span>committed {commit.date}</span>
@@ -558,6 +566,16 @@ export const CommitGraph = ({
         }
         .bn-commit-graph__author { color: var(--bn-text-1); }
         .bn-commit-graph__sep { color: var(--bn-text-3); }
+        .bn-commit-graph__avatar {
+          width: 14px;
+          height: 14px;
+          border-radius: 50%;
+          border: 1px solid var(--bn-border-dark);
+          object-fit: cover;
+        }
+        .bn-commit-graph__rail.is-lane-1 .bn-commit-graph__dot { border-color: var(--bn-green); }
+        .bn-commit-graph__rail.is-lane-2 .bn-commit-graph__dot { border-color: var(--bn-yellow); }
+        .bn-commit-graph__rail.is-lane-3 .bn-commit-graph__dot { border-color: var(--bn-purple); }
       `}</style>
     </div>
   );

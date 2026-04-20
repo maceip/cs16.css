@@ -539,3 +539,22 @@
   background-color: var(--bn-surface-3);
   border: 2px solid var(--bn-surface);
 }
+
+/* -------------------------------------------------------------------------
+ * Diff tokens — GitHub-canonical diff coloring sat over the frost palette.
+ * Used by DiffViewer, FileDiffCard, and any +/- gutters.
+ * ---------------------------------------------------------------------- */
+:root {
+  --bn-diff-add-bg: hsl(140 55% 18%);
+  --bn-diff-add-fg: hsl(140 60% 70%);
+  --bn-diff-add-gutter: hsl(140 45% 26%);
+
+  --bn-diff-del-bg: hsl(0 50% 20%);
+  --bn-diff-del-fg: hsl(0 60% 75%);
+  --bn-diff-del-gutter: hsl(0 45% 30%);
+
+  --bn-diff-context-bg: hsl(213 16% 12%);
+  --bn-diff-context-fg: hsl(213 18% 78%);
+
+  --bn-diff-meta-fg: hsl(213 14% 55%);
+}

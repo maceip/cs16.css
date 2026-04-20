@@ -175,6 +175,88 @@ const PATHS = {
       />
     </>
   ),
+  diff: (
+    <path
+      d="M7 1 v4 M5 3 h4 M5 11 h4 M3 9 h8 M1 13 h12"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+    />
+  ),
+  pr: (
+    <>
+      <circle cx="3.5" cy="3" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="3.5" cy="11" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="10.5" cy="11" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <path
+        d="M3.5 4.5 v5 M10.5 9.5 v-4 a2 2 0 0 0 -2 -2 h-2 M6.5 1.5 l-1.5 1 l1.5 1"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+    </>
+  ),
+  merge: (
+    <>
+      <circle cx="3.5" cy="3" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="3.5" cy="11" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <circle cx="10.5" cy="8" r="1.5" fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <path
+        d="M3.5 4.5 v5 M3.5 5 c0 3 7 2 7 3"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.2"
+      />
+    </>
+  ),
+  users: (
+    <path
+      d="M5 4 a2 2 0 1 0 0 -0.01 z M10 5 a1.5 1.5 0 1 0 0 -0.01 z M1 12 c0 -2 2 -3 4 -3 s4 1 4 3 M9 12 c0 -1.5 1.5 -2.5 3 -2.5 s2 1 2 2.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+    />
+  ),
+  user: (
+    <path
+      d="M7 3 a2.2 2.2 0 1 0 0 -0.01 z M2 12 c0 -2.5 2.5 -4 5 -4 s5 1.5 5 4"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+    />
+  ),
+  attach: (
+    <path
+      d="M11 3 l-6 6 a2 2 0 0 0 3 3 l6 -6 a3 3 0 0 0 -4 -4 l-6 6 a4 4 0 0 0 5 5 l5 -5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+    />
+  ),
+  send: (
+    <path
+      d="M1 1 L13 7 L1 13 L3 7 Z M3 7 h6"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.2"
+      strokeLinejoin="miter"
+    />
+  ),
+  sparkle: (
+    <path
+      d="M7 1 l1.3 3.7 l3.7 1.3 l-3.7 1.3 l-1.3 3.7 l-1.3 -3.7 l-3.7 -1.3 l3.7 -1.3 z M12 11 l0.6 1.4 l1.4 0.6 l-1.4 0.6 l-0.6 1.4 l-0.6 -1.4 l-1.4 -0.6 l1.4 -0.6 z"
+      fill="currentColor"
+    />
+  ),
+  stop: <rect x="3" y="3" width="8" height="8" fill="currentColor" />,
+  regen: (
+    <path
+      d="M12 7 a5 5 0 1 1 -1.5 -3.5 M12 1 v3 h-3"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.3"
+    />
+  ),
 };
 
 const VIEWBOX = '0 0 14 14';
