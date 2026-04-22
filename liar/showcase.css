@@ -528,193 +528,599 @@
   gap: 6px;
 }
 
-.liar-code-line {
-  padding: 0;
+/* ----------------------------------------------------------------------------
+ * Developer surface
+ * GitHub-inspired repo / commit / file / code presentations on the CS16 palette.
+ * -------------------------------------------------------------------------- */
+
+.liar-icon {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  color: currentColor;
+}
+
+.liar-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  shape-rendering: crispEdges;
+}
+
+/* Code line
+   -------------------------------------------------------------------------- */
+.dev-code-line {
   display: grid;
-  grid-template-columns: auto 1fr auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  align-items: stretch;
+  border: 1px solid;
+  border-color: #8c9284 #292c21 #292c21 #8c9284;
+  background-color: #292c21;
+  min-height: 32px;
+  overflow: hidden;
+}
+
+.dev-code-line__lang {
+  display: inline-flex;
   align-items: center;
-}
-
-.liar-code-line__label {
-  padding: 6px 8px;
-  color: #a0aa95;
-  border-right: 1px solid #292c21;
-  font-size: 11px;
-}
-
-.liar-code-line__code {
-  padding: 6px 8px;
+  padding: 0 8px;
+  background-color: #3e4637;
   color: #c4b550;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  border-right: 1px solid #292c21;
+}
+
+.dev-code-line__code {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  color: #dedfd6;
   font-family: "Courier New", Courier, monospace;
   font-size: 12px;
-  overflow-x: auto;
+  line-height: 1.4;
   white-space: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  min-width: 0;
 }
 
-.liar-code-line__copy {
-  border-left: 1px solid #292c21;
+.dev-code-line__code::-webkit-scrollbar {
+  height: 6px;
 }
 
-.liar-repo-card {
-  padding: 10px;
-  display: grid;
-  gap: 8px;
-}
-
-.liar-repo-card__top {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  align-items: start;
-}
-
-.liar-repo-card__lang {
+.dev-code-line__file {
   display: inline-flex;
-  gap: 6px;
   align-items: center;
-}
-
-.liar-repo-card__dot {
-  width: 10px;
-  height: 10px;
-  background-color: #c4b550;
-  border: 1px solid #292c21;
-}
-
-.liar-repo-card__stats {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
+  padding: 0 8px;
   color: #a0aa95;
   font-size: 11px;
+  line-height: 1;
+  border-left: 1px solid #292c21;
+  font-style: italic;
 }
 
-.liar-repo-topics {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.liar-topic {
-  color: #d8ded3;
-  font-size: 11px;
-}
-
-.liar-commit-graph {
-  display: grid;
-  gap: 8px;
-}
-
-.liar-commit-row {
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
-  gap: 8px;
-}
-
-.liar-commit-rail {
+.dev-code-line__copy {
+  width: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-left: 1px solid #292c21;
+  background-color: #3e4637;
+  color: #dedfd6;
+  cursor: pointer;
   position: relative;
-  display: grid;
-  justify-items: center;
 }
 
-.liar-commit-rail__line {
-  position: absolute;
-  top: 18px;
-  bottom: -10px;
-  width: 2px;
-  background-color: #8c9284;
-}
-
-.liar-commit-rail__dot {
-  width: 12px;
-  height: 12px;
+.dev-code-line__copy:hover {
   background-color: #4a5942;
-  border: 1px solid #8c9284;
-  z-index: 1;
-  margin-top: 8px;
+  color: #ffffff;
 }
 
-.liar-commit-rail__dot.is-active {
-  background-color: #c4b550;
+.dev-code-line__copy:active {
+  background-color: #292c21;
 }
 
-.liar-commit-row__button {
-  text-align: left;
-  padding: 8px;
+.dev-code-line__copy-icon,
+.dev-code-line__copy-check {
+  transition: opacity 120ms linear;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dev-code-line__copy-check {
+  position: absolute;
+  inset: 0;
+  color: #c4b550;
+  opacity: 0;
+}
+
+.dev-code-line__copy.is-copied .dev-code-line__copy-icon {
+  opacity: 0;
+}
+
+.dev-code-line__copy.is-copied .dev-code-line__copy-check {
+  opacity: 1;
+}
+
+/* Repo card
+   -------------------------------------------------------------------------- */
+.dev-repo-card {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid;
+  border-color: #8c9284 #292c21 #292c21 #8c9284;
+  background-color: #3e4637;
+}
+
+.dev-repo-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #292c21;
+  box-shadow: 0 1px 0 #8c9284;
+  line-height: 1;
+}
+
+.dev-repo-card__glyph {
+  color: #a0aa95;
+  width: 16px;
+  height: 16px;
+  margin-right: 2px;
+}
+
+.dev-repo-card__owner,
+.dev-repo-card__name {
+  color: #e9d86a;
+  text-decoration: none;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.dev-repo-card__owner:hover,
+.dev-repo-card__name:hover {
+  text-decoration: underline;
+}
+
+.dev-repo-card__name {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.dev-repo-card__sep {
+  color: #a0aa95;
+  font-size: 14px;
+}
+
+.dev-repo-card__visibility {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 8px 2px;
   border: 1px solid;
   border-color: #8c9284 #292c21 #292c21 #8c9284;
   background-color: #4a5942;
-  color: inherit;
+  color: #dedfd6;
+  font-size: 11px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
-.liar-commit-row__summary {
-  display: grid;
+.dev-repo-card__desc {
+  color: #d8ded3;
+  font-size: 12px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.dev-repo-card__topics {
+  display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 
-.liar-commit-row__hash {
+.dev-repo-card__topic {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 7px 2px;
+  background-color: #292c21;
+  color: #c4b550;
+  border: 1px solid #4a5942;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+
+.dev-repo-card__topic:hover {
+  background-color: #3e4637;
+  color: #ffffff;
+}
+
+.dev-repo-card__stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding-top: 8px;
+  border-top: 1px solid #292c21;
   color: #a0aa95;
   font-size: 11px;
+  line-height: 1;
 }
 
-.liar-commit-detail {
-  padding: 10px;
-  display: grid;
-  gap: 6px;
-}
-
-.liar-commit-refs {
-  display: flex;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.liar-file-tree {
-  padding: 8px;
-}
-
-.liar-file-tree__list {
-  display: grid;
-  gap: 4px;
-  padding-left: 16px;
-}
-
-.liar-file-tree__item {
-  display: grid;
-  gap: 4px;
-}
-
-.liar-file-tree__row {
-  display: grid;
-  grid-template-columns: auto auto auto 1fr;
-  gap: 6px;
+.dev-repo-card__stat {
+  display: inline-flex;
   align-items: center;
-}
-
-.liar-file-tree__row.is-highlighted {
-  color: #c4b550;
-}
-
-.liar-file-tree__toggle {
-  min-width: 24px;
-  padding: 2px 4px 1px;
-}
-
-.liar-file-tree__leaf {
-  width: 24px;
-  text-align: center;
-}
-
-.liar-file-tree__children[hidden] {
-  display: none;
-}
-
-.liar-file-tree__icon.is-folder {
+  gap: 5px;
   color: #d8ded3;
 }
 
-.liar-file-tree__icon.is-file {
+.dev-repo-card__stat--muted {
   color: #a0aa95;
+  margin-left: auto;
+}
+
+.dev-repo-card__stat-icon {
+  color: #a0aa95;
+  width: 12px;
+  height: 12px;
+}
+
+.dev-repo-card__lang-dot {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border: 1px solid #292c21;
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Commit graph
+   -------------------------------------------------------------------------- */
+.dev-commit-graph {
+  display: grid;
+  gap: 0;
+  padding: 4px 0;
+  border: 1px solid;
+  border-color: #8c9284 #292c21 #292c21 #8c9284;
+  background-color: #3e4637;
+}
+
+.dev-commit-graph__row {
+  display: grid;
+  grid-template-columns: 32px minmax(0, 1fr);
+  gap: 10px;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid #292c21;
+  box-shadow: 0 1px 0 #4a5942;
+}
+
+.dev-commit-graph__row:last-child {
+  border-bottom: 0;
+  box-shadow: none;
+}
+
+.dev-commit-graph__rail {
+  position: relative;
+  min-height: 44px;
+}
+
+.dev-commit-graph__line {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  margin-left: -1px;
+  background-color: #8c9284;
+}
+
+.dev-commit-graph__rail.is-first .dev-commit-graph__line {
+  top: 14px;
+}
+
+.dev-commit-graph__rail.is-last .dev-commit-graph__line {
+  bottom: calc(100% - 14px);
+}
+
+.dev-commit-graph__dot {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  width: 10px;
+  height: 10px;
+  margin-left: -5px;
+  background-color: #3e4637;
+  border: 2px solid #8c9284;
+  box-shadow: 0 0 0 1px #292c21;
+  z-index: 1;
+}
+
+.dev-commit-graph__row.is-active .dev-commit-graph__dot {
+  background-color: #c4b550;
+  border-color: #958831;
+}
+
+.dev-commit-graph__card {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.dev-commit-graph__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.dev-commit-graph__hash {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 6px 1px;
+  background-color: #292c21;
+  color: #c4b550;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  line-height: 1;
+  border: 1px solid #4a5942;
+}
+
+.dev-commit-graph__refs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+  margin-left: auto;
+}
+
+.dev-commit-graph__ref {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px 1px;
+  border: 1px solid;
+  border-color: #8c9284 #292c21 #292c21 #8c9284;
+  background-color: #4a5942;
+  color: #dedfd6;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.dev-commit-graph__ref--branch {
+  color: #a7d1ff;
+}
+
+.dev-commit-graph__ref--tag {
+  color: #e9d86a;
+}
+
+.dev-commit-graph__ref--head {
+  background-color: #292c21;
+  color: #c4b550;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.dev-commit-graph__ref-icon {
+  width: 11px;
+  height: 11px;
+}
+
+.dev-commit-graph__message {
+  color: #ffffff;
+  font-size: 13px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.dev-commit-graph__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: #a0aa95;
+  font-size: 11px;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.dev-commit-graph__author {
+  color: #d8ded3;
+}
+
+.dev-commit-graph__meta-sep {
+  color: #6e7564;
+}
+
+/* File tree
+   -------------------------------------------------------------------------- */
+.dev-file-tree {
+  display: grid;
+  gap: 0;
+  border: 1px solid;
+  border-color: #8c9284 #292c21 #292c21 #8c9284;
+  background-color: #3e4637;
+  overflow: hidden;
+}
+
+.dev-file-tree__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background-color: #4a5942;
+  border-bottom: 1px solid #292c21;
+  box-shadow: 0 1px 0 #8c9284;
+}
+
+.dev-file-tree__summary {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  color: #dedfd6;
+  font-size: 11px;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.dev-file-tree__summary-sep {
+  color: #6e7564;
+}
+
+.dev-file-tree__actions {
+  display: inline-flex;
+  gap: 6px;
+}
+
+.dev-file-tree__action {
+  padding: 3px 10px 2px;
+  font-size: 11px;
+  min-width: 0;
+}
+
+.dev-file-tree__list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0;
+}
+
+.dev-file-tree__list--root {
+  padding: 4px 0;
+}
+
+.dev-file-tree__list--nested {
+  position: relative;
+  margin-left: 17px;
+  padding-left: 0;
+}
+
+.dev-file-tree__list--nested::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  bottom: 2px;
+  left: 0;
+  width: 1px;
+  background-color: #292c21;
+  opacity: 0.75;
+}
+
+.dev-file-tree__item {
+  display: grid;
+  gap: 0;
+}
+
+.dev-file-tree__row {
+  display: grid;
+  grid-template-columns: 14px 16px minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+  width: 100%;
+  min-height: 24px;
+  padding: 3px 10px 2px 10px;
+  border: 0;
+  background: transparent;
+  color: #dedfd6;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+  text-align: left;
+  cursor: default;
+  position: relative;
+}
+
+.dev-file-tree__row--folder {
+  cursor: pointer;
+  color: #ffffff;
+}
+
+.dev-file-tree__row:hover {
+  background-color: #4a5942;
+}
+
+.dev-file-tree__row:focus-visible {
+  outline: 1px dotted #c4b550;
+  outline-offset: -2px;
+}
+
+.dev-file-tree__row--file.is-active {
+  background-color: #292c21;
+  color: #c4b550;
+  box-shadow: inset 2px 0 0 #c4b550;
+}
+
+.dev-file-tree__chevron {
+  width: 14px;
+  height: 14px;
+  color: #a0aa95;
+  transition: transform 80ms linear;
+}
+
+.dev-file-tree__chevron.is-open {
+  transform: rotate(90deg);
+  color: #dedfd6;
+}
+
+.dev-file-tree__chevron--spacer {
+  background: transparent;
+}
+
+.dev-file-tree__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.dev-file-tree__icon--folder {
+  color: #c4b550;
+}
+
+.dev-file-tree__icon--file {
+  color: #a0aa95;
+}
+
+.dev-file-tree__icon--ext-ts,
+.dev-file-tree__icon--ext-tsx {
+  color: #7ab2ff;
+}
+
+.dev-file-tree__icon--ext-json {
+  color: #e6b655;
+}
+
+.dev-file-tree__icon--ext-md {
+  color: #d8ded3;
+}
+
+.dev-file-tree__name {
+  color: inherit;
+  font-size: 12px;
+  line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dev-file-tree__meta {
+  color: #6e7564;
+  font-size: 10px;
+  line-height: 1;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .liar-motion-carousel {

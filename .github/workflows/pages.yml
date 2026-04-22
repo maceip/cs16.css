@@ -1,0 +1,97 @@
+# Deploy the component catalog (showcase + liar gallery + server browser) to
+# GitHub Pages.
+#
+# Triggers:
+#   - push to main                 — auto-deploy on every merge
+#   - workflow_dispatch            — manual run (Actions tab / gh CLI / API)
+#   - repository_dispatch          — external API trigger (POST /dispatches
+#                                    with event_type: "deploy-pages")
+#
+# To fire from the API:
+#   curl -X POST \
+#     -H "Authorization: Bearer $GITHUB_TOKEN" \
+#     -H "Accept: application/vnd.github+json" \
+#     https://api.github.com/repos/maceip/cs16.css/dispatches \
+#     -d '{"event_type":"deploy-pages"}'
+#
+# Or with the gh CLI:
+#   gh workflow run pages.yml -R maceip/cs16.css
+
+name: Deploy catalog to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Branch, tag, or SHA to deploy
+        required: false
+        default: main
+  repository_dispatch:
+    types: [deploy-pages, deploy-catalog]
+
+# Single concurrent deploy. Queue additional runs; don't cancel in-flight.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    name: Build catalog
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.ref || github.event.client_payload.ref || github.ref }}
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CSS
+        run: pnpm run build:css
+
+      - name: Build catalog (vite)
+        env:
+          # GitHub Pages for a project repo serves at /<repo-name>/.
+          # Let Vite emit relative asset URLs so the deploy survives at any
+          # subpath (also keeps local preview working).
+          VITE_BASE: ./
+        run: pnpm exec vite build --base=./
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4

@@ -135,47 +135,152 @@ const carouselSlides = [
 const repoCardData = {
   owner: "jal-co",
   repo: "ui",
-  description: "Repository summary card with language, stars, forks, and topic tags.",
+  description:
+    "A curated set of high-quality UI primitives for modern app shells. CS16-flavored.",
   language: "TypeScript",
-  stars: "1248",
-  forks: "84",
-  updated: "updated 2d ago",
-  topics: ["ui", "components", "design-system", "accessibility"],
+  languageColor: "#3178c6",
+  stars: 1248,
+  forks: 84,
+  watchers: 42,
+  license: "MIT",
+  visibility: "Public",
+  updated: "2d ago",
+  topics: ["ui", "components", "design-system", "accessibility", "van-js"],
+};
+
+const codeLineData = {
+  lang: "ts",
+  file: "button.ts",
+  snippet: 'import { Button } from "@/components/ui/button"',
 };
 
 const commitGraphData = [
   {
-    hash: "c80f097",
+    hash: "c80f097a2b",
     message: "Clarify attestation showcase modules",
     author: "agent",
-    date: "2026-04-17",
+    date: "2d ago",
     parents: ["48752e5"],
-    refs: ["main"],
+    refs: [{ name: "main", type: "branch" }, { name: "HEAD", type: "head" }],
   },
   {
-    hash: "48752e5",
+    hash: "48752e5f17",
     message: "Add motion-inspired Van.js demos",
     author: "agent",
-    date: "2026-04-17",
+    date: "2d ago",
     parents: ["225a905"],
-    refs: ["feature"],
+    refs: [{ name: "feature/motion", type: "branch" }],
   },
   {
-    hash: "225a905",
+    hash: "225a9052c0",
     message: "Rebuild showcase from cs16 baseline",
     author: "agent",
-    date: "2026-04-17",
+    date: "3d ago",
     parents: [],
-    refs: ["reset"],
+    refs: [{ name: "v0.2.0", type: "tag" }],
+  },
+  {
+    hash: "a05b63fbe1",
+    message: "Add collapsible desktop sidebar and foldable rail",
+    author: "agent",
+    date: "5d ago",
+    parents: ["225a905"],
+    refs: [],
   },
 ];
 
 const fileTreeData = [
-  ["src", ["components", "lib", "index.ts"]],
-  ["components", ["accordion.ts", "dialog.ts", "tooltip.ts"]],
-  ["package.json", []],
-  ["README.md", []],
+  {
+    name: "src",
+    children: [
+      {
+        name: "components",
+        children: [
+          { name: "accordion.ts", size: "2.4 KB" },
+          { name: "dialog.ts", size: "3.1 KB" },
+          { name: "file-tree.ts", size: "1.7 KB", active: true },
+          { name: "tooltip.ts", size: "0.9 KB" },
+        ],
+      },
+      {
+        name: "lib",
+        children: [
+          { name: "tokens.ts", size: "0.6 KB" },
+          { name: "utils.ts", size: "1.2 KB" },
+        ],
+      },
+      { name: "index.ts", size: "0.3 KB" },
+    ],
+  },
+  { name: "package.json", size: "1.2 KB" },
+  { name: "README.md", size: "3.8 KB" },
+  { name: ".gitignore", size: "0.2 KB" },
 ];
+
+const ICON_SVGS = {
+  chevron:
+    '<svg viewBox="0 0 10 10" aria-hidden="true" focusable="false"><path d="M3 2 L3 8 L7 5 Z" fill="currentColor"/></svg>',
+  folder:
+    '<svg viewBox="0 0 16 14" aria-hidden="true" focusable="false"><path d="M1 2 h5 l2 2 h7 v9 h-14 z" fill="currentColor"/></svg>',
+  "folder-open":
+    '<svg viewBox="0 0 16 14" aria-hidden="true" focusable="false"><path d="M1 2 h5 l2 2 h7 v2 h-11 l-3 7 h-1 z M15 6 l-2 7 h-12 l2 -7 z" fill="currentColor"/></svg>',
+  file:
+    '<svg viewBox="0 0 12 14" aria-hidden="true" focusable="false"><path d="M1 1 h7 l3 3 v9 h-10 z M8 1 v3 h3" fill="currentColor"/></svg>',
+  copy:
+    '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M3 1 h8 v2 h-6 v8 h-2 z M5 3 h8 v10 h-8 z" fill="currentColor"/></svg>',
+  check:
+    '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M2 7 l3 3 l7 -7 l-1 -1 l-6 6 l-2 -2 z" fill="currentColor"/></svg>',
+  star:
+    '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M7 1 l1.7 4 l4.3 0.3 l-3.3 2.8 l1 4.4 l-3.7 -2.3 l-3.7 2.3 l1 -4.4 l-3.3 -2.8 l4.3 -0.3 z" fill="currentColor"/></svg>',
+  fork:
+    '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M3 1 h2 v3 h-2 z M9 1 h2 v3 h-2 z M3 10 h2 v3 h-2 z M4 4 v2 c0 1.5 6 1.5 6 3 M4 6 v4 M10 4 v2" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
+  eye:
+    '<svg viewBox="0 0 16 14" aria-hidden="true" focusable="false"><path d="M1 7 c3 -5 11 -5 14 0 c-3 5 -11 5 -14 0 z M8 4 a3 3 0 1 0 0.01 0 z" fill="currentColor"/></svg>',
+  repo:
+    '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M2 1 h10 v11 h-9 a1 1 0 0 1 -1 -1 z M4 3 h6 v5 h-6 z M3 11 h9 v2 h-9 z" fill="currentColor"/></svg>',
+  branch:
+    '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><path d="M3 1 h2 v3 h-2 z M9 1 h2 v3 h-2 z M3 10 h2 v3 h-2 z M4 4 v6 M10 4 c0 3 -6 2 -6 3" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>',
+  tag:
+    '<svg viewBox="0 0 16 14" aria-hidden="true" focusable="false"><path d="M1 7 l6 -6 h8 v8 l-6 6 z M12 4 h1.5 v1.5 h-1.5 z" fill="currentColor"/></svg>',
+  dot:
+    '<svg viewBox="0 0 10 10" aria-hidden="true" focusable="false"><circle cx="5" cy="5" r="4" fill="currentColor"/></svg>',
+  commit:
+    '<svg viewBox="0 0 14 14" aria-hidden="true" focusable="false"><circle cx="7" cy="7" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M0 6 h3 v2 h-3 z M11 6 h3 v2 h-3 z" fill="currentColor"/></svg>',
+};
+
+function icon(name, extraClass = "") {
+  const el = document.createElement("span");
+  el.className = `liar-icon liar-icon--${name}${extraClass ? " " + extraClass : ""}`;
+  el.setAttribute("aria-hidden", "true");
+  el.innerHTML = ICON_SVGS[name] || "";
+  return el;
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("en-US").format(value);
+}
+
+function fileExtension(name) {
+  const match = /\.([a-z0-9]+)$/i.exec(name);
+  return match ? match[1].toLowerCase() : "";
+}
+
+function countTreeNodes(nodes) {
+  let folders = 0;
+  let files = 0;
+  const walk = (list) => {
+    for (const node of list) {
+      if (Array.isArray(node.children)) {
+        folders += 1;
+        walk(node.children);
+      } else {
+        files += 1;
+      }
+    }
+  };
+  walk(nodes);
+  return { folders, files };
+}
 
 const scrambleAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
@@ -852,143 +957,244 @@ function renderTooltip() {
 }
 
 function renderCodeLine() {
+  const snippet = codeLineData.snippet;
   return renderLine(
     "Code Line",
-    "Compact single-line snippet with inline copy action.",
+    "Inline code snippet with language tag, filename, and copy action.",
     div(
-      { class: "liar-panel liar-code-line" },
-      code(null, 'import { Button } from "@/components/ui/button"'),
-      button({ class: "cs-btn", type: "button" }, "Copy")
+      { class: "dev-code-line" },
+      span({ class: "dev-code-line__lang" }, codeLineData.lang),
+      code({ class: "dev-code-line__code" }, snippet),
+      span({ class: "dev-code-line__file" }, codeLineData.file),
+      button(
+        {
+          class: "dev-code-line__copy",
+          type: "button",
+          title: "Copy snippet",
+          "aria-label": "Copy snippet",
+          onclick: async (event) => {
+            const trigger = event.currentTarget;
+            try {
+              await navigator.clipboard.writeText(snippet);
+              trigger.classList.add("is-copied");
+              setTimeout(() => trigger.classList.remove("is-copied"), 1200);
+            } catch {
+              trigger.classList.add("is-failed");
+              setTimeout(() => trigger.classList.remove("is-failed"), 1200);
+            }
+          },
+        },
+        icon("copy", "dev-code-line__copy-icon"),
+        icon("check", "dev-code-line__copy-check")
+      )
     )
   );
 }
 
 function renderRepoCard() {
+  const data = repoCardData;
   return renderLine(
     "Repo Card",
-    "Repository summary card with language, stars, forks, and topic tags.",
+    "Repository summary with language, stars, forks, and topic tags.",
     div(
-      { class: "liar-panel liar-repo" },
-      strongLine(`${repoCardData.owner}/${repoCardData.repo}`),
-      p(null, repoCardData.description),
-      p({ class: "liar-card__meta" }, `${repoCardData.language} • ★ ${repoCardData.stars} • Forks ${repoCardData.forks} • ${repoCardData.updated}`),
-      div({ class: "liar-row" }, ...repoCardData.topics.map((topic) => span({ class: "liar-chip" }, topic)))
+      { class: "dev-repo-card" },
+      div(
+        { class: "dev-repo-card__head" },
+        icon("repo", "dev-repo-card__glyph"),
+        a({ class: "dev-repo-card__owner", href: "#", tabindex: "-1" }, data.owner),
+        span({ class: "dev-repo-card__sep" }, "/"),
+        a({ class: "dev-repo-card__name", href: "#", tabindex: "-1" }, data.repo),
+        span({ class: "dev-repo-card__visibility" }, data.visibility)
+      ),
+      p({ class: "dev-repo-card__desc" }, data.description),
+      div(
+        { class: "dev-repo-card__topics" },
+        ...data.topics.map((topic) => span({ class: "dev-repo-card__topic" }, topic))
+      ),
+      div(
+        { class: "dev-repo-card__stats" },
+        span(
+          { class: "dev-repo-card__stat" },
+          span({
+            class: "dev-repo-card__lang-dot",
+            style: `background-color:${data.languageColor};`,
+          }),
+          data.language
+        ),
+        span(
+          { class: "dev-repo-card__stat" },
+          icon("star", "dev-repo-card__stat-icon"),
+          formatNumber(data.stars)
+        ),
+        span(
+          { class: "dev-repo-card__stat" },
+          icon("fork", "dev-repo-card__stat-icon"),
+          formatNumber(data.forks)
+        ),
+        span(
+          { class: "dev-repo-card__stat" },
+          icon("eye", "dev-repo-card__stat-icon"),
+          formatNumber(data.watchers)
+        ),
+        span({ class: "dev-repo-card__stat" }, `${data.license} license`),
+        span({ class: "dev-repo-card__stat dev-repo-card__stat--muted" }, `Updated ${data.updated}`)
+      )
     )
   );
 }
 
+function renderCommitRef(ref) {
+  const iconName = ref.type === "tag" ? "tag" : ref.type === "head" ? "commit" : "branch";
+  return span(
+    { class: `dev-commit-graph__ref dev-commit-graph__ref--${ref.type}` },
+    icon(iconName, "dev-commit-graph__ref-icon"),
+    ref.name
+  );
+}
+
 function renderCommitGraph() {
+  const total = commitGraphData.length;
   return renderLine(
     "Commit Graph",
     "Topological commit rail with branching and merge ancestry.",
     div(
-      { class: "liar-stack liar-commit-graph" },
-      ...commitGraphData.map((commit) =>
-        div(
-          { class: "liar-commit-row" },
-          div({ class: "liar-commit-rail" }, span({ class: "liar-commit-dot" }, "●"), span({ class: "liar-commit-line" }, "|")),
+      { class: "dev-commit-graph" },
+      ...commitGraphData.map((commit, index) => {
+        const isFirst = index === 0;
+        const isLast = index === total - 1;
+        const railClass = `dev-commit-graph__rail${isFirst ? " is-first" : ""}${isLast ? " is-last" : ""}`;
+        return div(
+          { class: `dev-commit-graph__row${isFirst ? " is-active" : ""}` },
           div(
-            { class: "liar-panel liar-commit-card" },
-            strongLine(commit.message),
-            p({ class: "liar-card__meta" }, `${commit.author} • ${commit.date}`),
-            p({ class: "liar-card__meta" }, `Parents: ${commit.parents.join(", ") || "root"}`),
-            div({ class: "liar-row" }, ...commit.refs.map((refValue) => span({ class: "liar-chip" }, refValue)))
+            { class: railClass, "aria-hidden": "true" },
+            div({ class: "dev-commit-graph__line" }),
+            div({ class: "dev-commit-graph__dot" })
+          ),
+          div(
+            { class: "dev-commit-graph__card" },
+            div(
+              { class: "dev-commit-graph__header" },
+              code({ class: "dev-commit-graph__hash" }, commit.hash.slice(0, 7)),
+              commit.refs.length
+                ? div(
+                    { class: "dev-commit-graph__refs" },
+                    ...commit.refs.map((ref) => renderCommitRef(ref))
+                  )
+                : null
+            ),
+            p({ class: "dev-commit-graph__message" }, commit.message),
+            p(
+              { class: "dev-commit-graph__meta" },
+              span({ class: "dev-commit-graph__author" }, commit.author),
+              span({ class: "dev-commit-graph__meta-sep" }, "·"),
+              span(null, `committed ${commit.date}`),
+              commit.parents.length
+                ? [
+                    span({ class: "dev-commit-graph__meta-sep" }, "·"),
+                    span(null, `parent ${commit.parents[0].slice(0, 7)}`),
+                  ]
+                : null
+            )
           )
-        )
-      )
+        );
+      })
     )
   );
 }
 
 function renderFileTreeNode(node, parentPath = "") {
-  const [name, children] = node;
-  const path = parentPath ? `${parentPath}/${name}` : name;
-  const isFolder = Array.isArray(children) && children.length > 0;
+  const path = parentPath ? `${parentPath}/${node.name}` : node.name;
+  const isFolder = Array.isArray(node.children);
   const isExpanded = state.expandedTreePaths.val.includes(path);
+  const ext = isFolder ? "" : fileExtension(node.name);
 
-  if (!isFolder) {
-    return li(
-      { class: "liar-file-tree__item" },
-      div(
-        { class: "liar-file-tree__row" },
-        span({ class: "liar-file-tree__leaf" }, "•"),
-        span({ class: "liar-file-tree__icon is-file" }, "[F]"),
-        span(null, name)
-      )
-    );
-  }
+  const rowChildren = [
+    isFolder
+      ? icon("chevron", `dev-file-tree__chevron${isExpanded ? " is-open" : ""}`)
+      : span({ class: "dev-file-tree__chevron dev-file-tree__chevron--spacer" }),
+    isFolder
+      ? icon(isExpanded ? "folder-open" : "folder", "dev-file-tree__icon dev-file-tree__icon--folder")
+      : icon("file", `dev-file-tree__icon dev-file-tree__icon--file dev-file-tree__icon--ext-${ext || "plain"}`),
+    span({ class: "dev-file-tree__name" }, node.name),
+    node.size ? span({ class: "dev-file-tree__meta" }, node.size) : null,
+  ];
 
-  return li(
-    { class: "liar-file-tree__item" },
-    div(
-      { class: "liar-file-tree__row" },
-      button(
+  const row = isFolder
+    ? button(
         {
-          class: "cs-btn liar-file-tree__toggle",
+          class: `dev-file-tree__row dev-file-tree__row--folder${isExpanded ? " is-open" : ""}`,
           type: "button",
+          "aria-expanded": `${isExpanded}`,
           onclick: () => {
-            const next = isExpanded
+            state.expandedTreePaths.val = isExpanded
               ? state.expandedTreePaths.val.filter((value) => value !== path)
               : [...state.expandedTreePaths.val, path];
-            state.expandedTreePaths.val = next;
           },
         },
-        isExpanded ? "-" : "+"
-      ),
-      span({ class: "liar-file-tree__icon is-folder" }, "[D]"),
-      span(null, name)
-    ),
-    isExpanded
+        ...rowChildren
+      )
+    : div(
+        {
+          class: `dev-file-tree__row dev-file-tree__row--file${node.active ? " is-active" : ""}`,
+        },
+        ...rowChildren
+      );
+
+  return li(
+    { class: "dev-file-tree__item", role: "treeitem", "aria-expanded": isFolder ? `${isExpanded}` : undefined },
+    row,
+    isFolder && isExpanded
       ? ul(
-          { class: "liar-file-tree__list" },
-          ...children.map((child) =>
-            Array.isArray(child) && child.length === 2
-              ? renderFileTreeNode(child, path)
-              : li(
-                  { class: "liar-file-tree__item" },
-                  div(
-                    { class: "liar-file-tree__row" },
-                    span({ class: "liar-file-tree__leaf" }, "•"),
-                    span({ class: "liar-file-tree__icon is-file" }, "[F]"),
-                    span(null, child)
-                  )
-                )
-          )
+          { class: "dev-file-tree__list dev-file-tree__list--nested", role: "group" },
+          ...node.children.map((child) => renderFileTreeNode(child, path))
         )
       : null
   );
 }
 
 function renderFileTree() {
+  const { folders, files } = countTreeNodes(fileTreeData);
   return renderLine(
     "File Tree",
-    "Collapsible project tree with file and folder hierarchy.",
+    "Collapsible project tree with folders, files, and metadata.",
     div(
-      { class: "liar-stack" },
+      { class: "dev-file-tree" },
       div(
-        { class: "liar-row" },
-        button(
-          {
-            class: "cs-btn",
-            type: "button",
-            onclick: () => {
-              state.expandedTreePaths.val = ["src", "src/components"];
-            },
-          },
-          "Expand"
+        { class: "dev-file-tree__head" },
+        span(
+          { class: "dev-file-tree__summary" },
+          span(null, `${folders} folders`),
+          span({ class: "dev-file-tree__summary-sep" }, "·"),
+          span(null, `${files} files`)
         ),
-        button(
-          {
-            class: "cs-btn",
-            type: "button",
-            onclick: () => {
-              state.expandedTreePaths.val = [];
+        div(
+          { class: "dev-file-tree__actions" },
+          button(
+            {
+              class: "cs-btn dev-file-tree__action",
+              type: "button",
+              onclick: () => {
+                state.expandedTreePaths.val = ["src", "src/components", "src/lib"];
+              },
             },
-          },
-          "Collapse"
+            "Expand"
+          ),
+          button(
+            {
+              class: "cs-btn dev-file-tree__action",
+              type: "button",
+              onclick: () => {
+                state.expandedTreePaths.val = [];
+              },
+            },
+            "Collapse"
+          )
         )
       ),
-      ul({ class: "liar-file-tree" }, ...fileTreeData.map((node) => renderFileTreeNode(node)))
+      ul(
+        { class: "dev-file-tree__list dev-file-tree__list--root", role: "tree" },
+        ...fileTreeData.map((node) => renderFileTreeNode(node))
+      )
     )
   );
 }
