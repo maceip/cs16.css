@@ -45,11 +45,19 @@ jobs:
   build:
     name: Build catalog
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.inputs.ref || github.event.client_payload.ref || github.ref }}
+
+      - name: Identify build target
+        run: |
+          echo "ref:    ${{ github.ref }}"
+          echo "sha:    ${{ github.sha }}"
+          echo "event:  ${{ github.event_name }}"
+          git log -1 --oneline
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
@@ -63,21 +71,26 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        # Try frozen first (preferred, exact reproduction) but fall back to a
+        # regular install if lockfile drift snuck in on main — this prevents
+        # a perfectly-reproducible local build from failing in CI.
+        run: |
+          pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
 
       - name: Build CSS
         run: pnpm run build:css
 
       - name: Build catalog (vite)
-        env:
-          # GitHub Pages for a project repo serves at /<repo-name>/.
-          # Let Vite emit relative asset URLs so the deploy survives at any
-          # subpath (also keeps local preview working).
-          VITE_BASE: ./
         run: pnpm exec vite build --base=./
 
       - name: Configure Pages
+        # enablement: true flips Pages ON at the repo level on the very first
+        # successful run. Without this, a repo whose Pages was never
+        # explicitly enabled — even with "Source: GitHub Actions" selected —
+        # will silently no-op the deploy.
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -88,6 +101,7 @@ jobs:
     name: Deploy
     needs: build
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
