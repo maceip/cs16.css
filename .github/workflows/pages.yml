@@ -31,7 +31,6 @@ on:
   repository_dispatch:
     types: [deploy-pages, deploy-catalog]
 
-# Single concurrent deploy. Queue additional runs; don't cancel in-flight.
 concurrency:
   group: pages
   cancel-in-progress: false
@@ -42,10 +41,16 @@ permissions:
   id-token: write
 
 jobs:
-  build:
-    name: Build catalog
+  # Single-job build + deploy. Combining them eliminates the inter-job
+  # artifact handoff that was silently no-op'ing earlier runs and lets us
+  # inspect dist/ on the same runner that uploads it.
+  deploy:
+    name: Build and deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -71,9 +76,6 @@ jobs:
           cache: pnpm
 
       - name: Install dependencies
-        # Try frozen first (preferred, exact reproduction) but fall back to a
-        # regular install if lockfile drift snuck in on main — this prevents
-        # a perfectly-reproducible local build from failing in CI.
         run: |
           pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
 
@@ -82,6 +84,17 @@ jobs:
 
       - name: Build catalog (vite)
         run: pnpm exec vite build --base=./
+
+      - name: Verify build output
+        # Fail loud if dist/ is empty or missing an index.html — otherwise
+        # a silent misconfig bubbles up as a 404 after deploy.
+        run: |
+          echo "--- dist tree ---"
+          ls -la dist
+          echo
+          echo "--- dist/index.html head ---"
+          head -20 dist/index.html
+          test -s dist/index.html || { echo "dist/index.html missing or empty"; exit 1; }
 
       - name: Configure Pages
         # enablement: true flips Pages ON at the repo level on the very first
@@ -97,15 +110,13 @@ jobs:
         with:
           path: dist
 
-  deploy:
-    name: Deploy
-    needs: build
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    environment:
-      name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
-    steps:
       - name: Deploy to GitHub Pages
         id: deploy
         uses: actions/deploy-pages@v4
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Deploy summary" >> $GITHUB_STEP_SUMMARY
+          echo "- page_url: ${{ steps.deploy.outputs.page_url }}" >> $GITHUB_STEP_SUMMARY
+          echo "- sha:      ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
