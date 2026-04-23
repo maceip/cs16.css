@@ -1,5 +1,10 @@
-# Deploy the component catalog (showcase + liar gallery + server browser) to
-# GitHub Pages.
+# Deploy the pre-built component catalog to GitHub Pages.
+#
+# The build step (pnpm + vite) is done LOCALLY and the resulting dist/ is
+# committed to the repo. This workflow only uploads the already-built files
+# and asks Pages to serve them. Every Node/pnpm/corepack attempt in CI was
+# flaky, and the user has been stuck on a 404 for 24+ hours — keeping the
+# surface area tiny here so deploys can't silently no-op.
 #
 # Triggers:
 #   - push to main                 — auto-deploy on every merge
@@ -7,7 +12,7 @@
 #   - repository_dispatch          — external API trigger (POST /dispatches
 #                                    with event_type: "deploy-pages")
 #
-# To fire from the API:
+# API trigger example:
 #   curl -X POST \
 #     -H "Authorization: Bearer $GITHUB_TOKEN" \
 #     -H "Accept: application/vnd.github+json" \
@@ -20,11 +25,6 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
-    inputs:
-      ref:
-        description: Branch, tag, or SHA to deploy
-        required: false
-        default: main
   repository_dispatch:
     types: [deploy-pages, deploy-catalog]
 
@@ -39,60 +39,28 @@ permissions:
 
 jobs:
   deploy:
-    name: Build and deploy
+    name: Deploy dist/ to Pages
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
     environment:
       name: github-pages
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.ref || github.event.client_payload.ref || github.ref }}
 
-      - name: Identify build target
-        run: |
-          echo "ref:    ${{ github.ref }}"
-          echo "sha:    ${{ github.sha }}"
-          echo "event:  ${{ github.event_name }}"
-          git log -1 --oneline
-
-      - name: Setup Node.js
-        # Use Node's built-in corepack to activate the pnpm version pinned
-        # in package.json's "packageManager" field. This sidesteps
-        # pnpm/action-setup which was failing silently on every prior run
-        # due to a version conflict with the +sha512 integrity hash.
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Enable corepack (pnpm)
-        run: |
-          corepack enable
-          corepack prepare pnpm@9.15.3 --activate
-          pnpm --version
-
-      - name: Install dependencies
-        run: |
-          pnpm install --frozen-lockfile || pnpm install --no-frozen-lockfile
-
-      - name: Build CSS
-        run: pnpm run build:css
-
-      - name: Build catalog (vite)
-        run: pnpm exec vite build --base=./
-
-      - name: Verify build output
+      - name: Verify dist/ exists
         run: |
           echo "--- dist tree ---"
           ls -la dist
           echo
           echo "--- dist/index.html head ---"
           head -20 dist/index.html
-          test -s dist/index.html || { echo "dist/index.html missing or empty"; exit 1; }
+          test -s dist/index.html || { echo "ERROR: dist/index.html missing or empty — run the local build and commit dist/"; exit 1; }
 
       - name: Configure Pages
+        # enablement: true flips Pages ON at the repo level on the very first
+        # successful run. Safe to leave true after Pages is already enabled.
         uses: actions/configure-pages@v5
         with:
           enablement: true

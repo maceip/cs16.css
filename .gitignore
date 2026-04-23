@@ -8,9 +8,13 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
-dist
 dist-ssr
 *.local
+
+# dist/ is intentionally tracked so the Pages workflow can deploy without
+# running a fresh build in CI (the pnpm + Vite chain kept failing silently).
+# Rebuild locally with `pnpm run build:css && pnpm exec vite build --base=./`
+# and commit the refreshed dist/ when source changes.
 
 # Editor directories and files
 .vscode/*
